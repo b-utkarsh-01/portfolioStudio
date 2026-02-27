@@ -1,4 +1,4 @@
-const defaultBase = "http://localhost:5000/api";
+const defaultBase = "https://portfoliostudio-backend.onrender.com/api";
 
 const normalizeBaseUrl = (base) => base.replace(/\/+$/, "");
 
