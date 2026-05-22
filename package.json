@@ -20,6 +20,8 @@
     "motion": "^12.34.3",
     "ogl": "^1.0.11",
     "postprocessing": "^6.38.3",
+    "portfolio-studio-default": "git+https://github.com/b-utkarsh-01/portfolioStudio-default.git",
+    "portfolio-studio-premium": "git+https://github.com/b-utkarsh-01/portfolioStudio-premium.git",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.13.1",
