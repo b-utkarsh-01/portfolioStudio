@@ -1,35 +1,55 @@
-import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../features/auth/AuthContext";
 import { encodePortfolioDataToParam } from "../features/portfolio/urlPortfolio";
 import { getMyPortfolioApi, upsertMyPortfolioApi } from "../features/portfolio/portfolioApi";
+import { toast } from "react-toastify";
 import DashboardForm from "./dashboard/DashboardForm";
 import DashboardHeader from "./dashboard/DashboardHeader";
 import PublicPortfolioUrlCard from "./dashboard/PublicPortfolioUrlCard";
 import { buildFormState, buildPortfolioData } from "./dashboard/formData";
 
 const Dashboard = () => {
-  const { currentUser, token, logout } = useAuth();
+  const { currentUser, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const appliedIntentRef = useRef("");
 
   const [form, setForm] = useState(() => buildFormState());
   const [savedAt, setSavedAt] = useState(null);
-  const [statusMessage, setStatusMessage] = useState("");
+  const [statusDetails, setStatusDetails] = useState([]);
 
   useEffect(() => {
-    if (!token) return;
+    if (!isAuthenticated) return;
     let cancelled = false;
 
     const loadPortfolio = async () => {
       try {
-        const payload = await getMyPortfolioApi(token);
+        const payload = await getMyPortfolioApi();
         if (!cancelled) {
           const nextData = payload?.portfolio?.data;
-          setForm(buildFormState(nextData));
+          const nextTemplateId = payload?.portfolio?.templateId || "premium-v1";
+          const templateIntent = location.state?.templateId || "";
+
+          if (templateIntent && templateIntent !== nextTemplateId && appliedIntentRef.current !== templateIntent) {
+            appliedIntentRef.current = templateIntent;
+            await upsertMyPortfolioApi({
+              templateId: templateIntent,
+              data: nextData,
+            });
+            setForm(buildFormState(nextData, templateIntent));
+            setSavedAt(Date.now());
+            toast.success("Template applied. You can now edit and publish.");
+            navigate("/dashboard", { replace: true });
+            return;
+          }
+
+          setForm(buildFormState(nextData, nextTemplateId));
         }
       } catch (error) {
         if (!cancelled) {
-          setStatusMessage(error.message || "Could not load existing portfolio.");
+          toast.error(error.message || "Could not load existing portfolio.");
+          setStatusDetails(Array.isArray(error?.details) ? error.details : []);
         }
       }
     };
@@ -38,7 +58,7 @@ const Dashboard = () => {
     return () => {
       cancelled = true;
     };
-  }, [token]);
+  }, [isAuthenticated, location.state, navigate]);
 
   const profileUrl = useMemo(
     () => (currentUser?.username ? `/u/${currentUser.username}` : "/"),
@@ -47,7 +67,8 @@ const Dashboard = () => {
 
   const urlDataPortfolioPath = useMemo(() => {
     const encoded = encodePortfolioDataToParam(buildPortfolioData(form));
-    return encoded ? `/portfolio/${encoded}` : "";
+    if (!encoded) return "";
+    return `/portfolio/${encoded}?templateId=${encodeURIComponent(form.templateId || "premium-v1")}`;
   }, [form]);
 
   const publicPortfolioUrl = useMemo(() => {
@@ -60,34 +81,109 @@ const Dashboard = () => {
     setForm((prev) => ({ ...prev, [field]: event.target.value }));
   };
 
+  const updateStageTitle = (stageId, title) => {
+    setForm((prev) => ({
+      ...prev,
+      layoutStages: (prev.layoutStages || []).map((stage) =>
+        stage.id === stageId ? { ...stage, title } : stage
+      ),
+    }));
+  };
+
+  const toggleStageEnabled = (stageId) => {
+    setForm((prev) => ({
+      ...prev,
+      layoutStages: (prev.layoutStages || []).map((stage) =>
+        stage.id === stageId ? { ...stage, enabled: !stage.enabled } : stage
+      ),
+    }));
+  };
+
+  const addCustomStage = () => {
+    setForm((prev) => {
+      const stages = Array.isArray(prev.layoutStages) ? prev.layoutStages : [];
+      const customCount = stages.filter((stage) => `${stage?.id || ""}`.startsWith("custom-")).length;
+      const nextIndex = customCount + 1;
+      const nextId = `custom-${nextIndex}`;
+      const nextStage = {
+        id: nextId,
+        title: `Custom Stage ${nextIndex}`,
+        enabled: true,
+      };
+
+      return {
+        ...prev,
+        layoutStages: [...stages, nextStage],
+        customStages: [
+          ...(Array.isArray(prev.customStages) ? prev.customStages : []),
+          { id: nextId, kind: "paragraph", paragraph: "", cards: [] },
+        ],
+      };
+    });
+  };
+
+  const updateCustomStage = (stageId, patch) => {
+    setForm((prev) => ({
+      ...prev,
+      customStages: (() => {
+        const current = Array.isArray(prev.customStages) ? prev.customStages : [];
+        const existingIndex = current.findIndex((stage) => stage.id === stageId);
+
+        if (existingIndex >= 0) {
+          return current.map((stage) => (stage.id === stageId ? { ...stage, ...patch } : stage));
+        }
+
+        return [
+          ...current,
+          {
+            id: stageId,
+            kind: patch?.kind === "cards" ? "cards" : "paragraph",
+            paragraph: patch?.paragraph ?? "",
+            cards: Array.isArray(patch?.cards) ? patch.cards : [],
+          },
+        ];
+      })(),
+    }));
+  };
+
   const handleSave = async (event) => {
     event.preventDefault();
-    if (!token) return;
-    setStatusMessage("");
+    if (!isAuthenticated) return;
+    setStatusDetails([]);
 
     try {
-      await upsertMyPortfolioApi(token, {
+      await upsertMyPortfolioApi({
         templateId: form.templateId,
         data: buildPortfolioData(form),
       });
       setSavedAt(Date.now());
+      toast.success("Portfolio saved.");
+      setStatusDetails([]);
     } catch (error) {
-      setStatusMessage(error.message || "Save failed.");
+      toast.error(error.message || "Save failed.");
+      setStatusDetails(Array.isArray(error?.details) ? error.details : []);
     }
   };
 
   const handleCopyPublicUrl = async () => {
     try {
       await navigator.clipboard.writeText(publicPortfolioUrl);
-      setStatusMessage("Public URL copied.");
+      toast.success("Public URL copied.");
     } catch {
-      setStatusMessage("Copy failed. URL manually copy kar lo.");
+      toast.error("Copy failed. URL manually copy kar lo.");
     }
   };
 
   const handleLogout = () => {
     logout();
     navigate("/auth");
+  };
+
+  const resetToDefault = () => {
+    setForm(buildFormState());
+    setSavedAt(null);
+    setStatusDetails([]);
+    toast.success("Reset to default.");
   };
 
   return (
@@ -100,10 +196,21 @@ const Dashboard = () => {
         form={form}
         onSubmit={handleSave}
         onFieldChange={updateField}
-        onTemplateChange={() => setForm((prev) => ({ ...prev, templateId: "portfolio-v1" }))}
+        onTemplateChange={(event) =>
+          setForm((prev) => ({
+            ...prev,
+            templateId: event.target.value,
+          }))
+        }
+        onStageTitleChange={updateStageTitle}
+        onStageToggle={toggleStageEnabled}
+        onAddStage={addCustomStage}
+        onResetDefaults={resetToDefault}
+        onCustomStageChange={updateCustomStage}
+        canUsePremium
         urlDataPortfolioPath={urlDataPortfolioPath}
         savedAt={savedAt}
-        statusMessage={statusMessage}
+        statusDetails={statusDetails}
       />
     </div>
   );

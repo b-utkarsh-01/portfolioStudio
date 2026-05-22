@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
 import About from "./About";
 import { getPortfolioByUsernameApi } from "../features/portfolio/portfolioApi";
-import TemplateV1Layout from "../components/layout/TemplateV1Layout";
+import TemplateV1Layout from "../templates/TemplateV1Layout";
 
 const UserPortfolio = ({ appReady, withTemplateLayout = false }) => {
   const { username = "" } = useParams();
@@ -47,10 +47,12 @@ const UserPortfolio = ({ appReady, withTemplateLayout = false }) => {
     return <Navigate to="/" replace />;
   }
 
-  const content = <About appReady={appReady} />;
+  const content = <About appReady={appReady} templateId={portfolio?.templateId || "premium-v1"} />;
 
   return withTemplateLayout ? (
-    <TemplateV1Layout portfolioData={portfolio.data}>{content}</TemplateV1Layout>
+    <TemplateV1Layout portfolioData={portfolio.data} templateId={portfolio.templateId}>
+      {content}
+    </TemplateV1Layout>
   ) : (
     content
   );

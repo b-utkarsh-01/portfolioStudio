@@ -5,20 +5,44 @@ import {
   contactIcons,
   skillGroupIcons,
   skillIcons,
-} from "../../components/about/aboutData";
+} from "../../../../premium-templates/src/nebula1/about/aboutData";
 import { defaultPortfolioData } from "./defaultPortfolioData";
 
 const {
+  layout: defaultLayout,
+  customStages: defaultCustomStages,
   profile: defaultProfile,
   badgeName: defaultBadgeName,
   skills: defaultSkills,
   education: defaultEducation,
   experiences: defaultExperiences,
   projects: defaultProjects,
+  services: defaultServices,
+  testimonials: defaultTestimonials,
   certifications: defaultCertifications,
 } = defaultPortfolioData;
 
 const cloneArray = (value) => (Array.isArray(value) ? [...value] : []);
+const cloneCards = (value) =>
+  cloneArray(value).map((item) => ({
+    title: item?.title ?? "",
+    subtitle: item?.subtitle ?? "",
+    description: item?.description ?? "",
+    link: item?.link ?? "",
+  }));
+const cloneCustomStages = (value) =>
+  cloneArray(value).map((stage) => ({
+    id: `${stage?.id ?? ""}`,
+    kind: stage?.kind === "cards" ? "cards" : "paragraph",
+    paragraph: stage?.paragraph ?? "",
+    cards: cloneCards(stage?.cards),
+  }));
+const cloneStages = (stages) =>
+  cloneArray(stages).map((stage) => ({
+    id: `${stage?.id ?? ""}`,
+    title: `${stage?.title ?? ""}`,
+    enabled: stage?.enabled !== false,
+  }));
 
 const cloneEducation = (entries) =>
   cloneArray(entries).map((entry) => ({
@@ -38,6 +62,10 @@ const cloneObjects = (entries, keys) =>
   );
 
 export const createDefaultEditableData = () => ({
+  layout: {
+    stages: cloneStages(defaultLayout?.stages),
+  },
+  customStages: cloneCustomStages(defaultCustomStages),
   profile: {
     name: defaultProfile.name,
     title: cloneArray(defaultProfile.title),
@@ -66,6 +94,8 @@ export const createDefaultEditableData = () => ({
   education: cloneEducation(defaultEducation),
   experiences: cloneObjects(defaultExperiences, ["title", "company", "period", "description"]),
   projects: cloneObjects(defaultProjects, ["name", "tech", "description", "link"]),
+  services: cloneObjects(defaultServices, ["name", "description"]),
+  testimonials: cloneObjects(defaultTestimonials, ["name", "role", "quote"]),
   certifications: cloneObjects(defaultCertifications, ["name", "provider", "link"]),
 });
 
@@ -114,6 +144,7 @@ const hydrateSkills = (rawSkills, defaultSkills) => {
 export const hydrateRenderData = (rawData) => {
   const defaults = createDefaultEditableData();
   const data = rawData ?? {};
+  const layout = data.layout ?? {};
   const profile = data.profile ?? {};
   const badge = data.badgeName ?? {};
   const skills = data.skills ?? {};
@@ -146,7 +177,13 @@ export const hydrateRenderData = (rawData) => {
     education: cloneEducation(data.education),
     experiences: cloneObjects(data.experiences, ["title", "company", "period", "description"]),
     projects: cloneObjects(data.projects, ["name", "tech", "description", "link"]),
+    services: cloneObjects(data.services, ["name", "description"]),
+    testimonials: cloneObjects(data.testimonials, ["name", "role", "quote"]),
     certifications: cloneObjects(data.certifications, ["name", "provider", "link"]),
+    layout: {
+      stages: cloneStages(layout.stages?.length ? layout.stages : defaults.layout.stages),
+    },
+    customStages: cloneCustomStages(data.customStages),
   };
 
   if (!renderData.profile.contacts.length) {
@@ -161,8 +198,17 @@ export const hydrateRenderData = (rawData) => {
   if (!renderData.projects.length) {
     renderData.projects = cloneObjects(defaults.projects, ["name", "tech", "description", "link"]);
   }
+  if (!renderData.services.length) {
+    renderData.services = cloneObjects(defaults.services, ["name", "description"]);
+  }
+  if (!renderData.testimonials.length) {
+    renderData.testimonials = cloneObjects(defaults.testimonials, ["name", "role", "quote"]);
+  }
   if (!renderData.certifications.length) {
     renderData.certifications = cloneObjects(defaults.certifications, ["name", "provider", "link"]);
+  }
+  if (!renderData.customStages.length) {
+    renderData.customStages = cloneCustomStages(defaults.customStages);
   }
 
   return {
