@@ -80,15 +80,17 @@ const linesToEducation = (value) =>
       };
     });
 
-export const buildFormState = (portfolioData) => {
+export const buildFormState = (portfolioData, templateId = "premium-v1") => {
   const base = portfolioData ?? createDefaultEditableData();
+  const fallbackLayoutStages = createDefaultEditableData().layout?.stages ?? [];
+  const baseCustomStages = Array.isArray(base?.customStages) ? base.customStages : [];
   const profile = base?.profile ?? {};
   const badge = base?.badgeName ?? {};
   const skills = base?.skills ?? {};
   const contacts = Array.isArray(profile.contacts) ? profile.contacts : [];
 
   return {
-    templateId: "portfolio-v1",
+    templateId,
     name: profile.name ?? "",
     titles: (profile.title ?? []).join("\n"),
     summary: profile.summary ?? "",
@@ -112,7 +114,33 @@ export const buildFormState = (portfolioData) => {
     education: educationToLines(base?.education),
     experiences: arrayToLines(base?.experiences, ["title", "company", "period", "description"]),
     projects: arrayToLines(base?.projects, ["name", "tech", "description", "link"]),
+    services: arrayToLines(base?.services, ["name", "description"]),
+    testimonials: arrayToLines(base?.testimonials, ["name", "role", "quote"]),
     certifications: arrayToLines(base?.certifications, ["name", "provider", "link"]),
+    layoutStages: Array.isArray(base?.layout?.stages) && base.layout.stages.length
+      ? base.layout.stages.map((stage) => ({
+          id: `${stage?.id ?? ""}`,
+          title: `${stage?.title ?? ""}`,
+          enabled: stage?.enabled !== false,
+        }))
+      : fallbackLayoutStages.map((stage) => ({
+          id: `${stage?.id ?? ""}`,
+          title: `${stage?.title ?? ""}`,
+          enabled: stage?.enabled !== false,
+        })),
+    customStages: baseCustomStages.map((stage) => ({
+      id: `${stage?.id ?? ""}`,
+      kind: stage?.kind === "cards" ? "cards" : "paragraph",
+      paragraph: `${stage?.paragraph ?? ""}`,
+      cards: Array.isArray(stage?.cards)
+        ? stage.cards.map((item) => ({
+            title: `${item?.title ?? ""}`,
+            subtitle: `${item?.subtitle ?? ""}`,
+            description: `${item?.description ?? ""}`,
+            link: `${item?.link ?? ""}`,
+          }))
+        : [],
+    })),
   };
 };
 
@@ -162,6 +190,28 @@ export const buildPortfolioData = (form) => {
     education: linesToEducation(form.education),
     experiences: linesToArray(form.experiences, ["title", "company", "period", "description"]),
     projects: linesToArray(form.projects, ["name", "tech", "description", "link"]),
+    services: linesToArray(form.services, ["name", "description"]),
+    testimonials: linesToArray(form.testimonials, ["name", "role", "quote"]),
     certifications: linesToArray(form.certifications, ["name", "provider", "link"]),
+    layout: {
+      stages: (Array.isArray(form.layoutStages) ? form.layoutStages : []).map((stage) => ({
+        id: `${stage?.id ?? ""}`,
+        title: `${stage?.title ?? ""}`.trim() || `${stage?.id ?? ""}`,
+        enabled: stage?.enabled !== false,
+      })),
+    },
+    customStages: (Array.isArray(form.customStages) ? form.customStages : []).map((stage) => ({
+      id: `${stage?.id ?? ""}`,
+      kind: stage?.kind === "cards" ? "cards" : "paragraph",
+      paragraph: `${stage?.paragraph ?? ""}`.trim(),
+      cards: (Array.isArray(stage?.cards) ? stage.cards : [])
+        .map((item) => ({
+          title: `${item?.title ?? ""}`.trim(),
+          subtitle: `${item?.subtitle ?? ""}`.trim(),
+          description: `${item?.description ?? ""}`.trim(),
+          link: `${item?.link ?? ""}`.trim(),
+        }))
+        .filter((item) => item.title || item.subtitle || item.description || item.link),
+    })),
   };
 };

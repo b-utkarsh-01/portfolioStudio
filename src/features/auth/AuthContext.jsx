@@ -1,20 +1,16 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { getCurrentUserApi, loginApi, registerApi } from "./authApi";
-
-const TOKEN_KEY = "portfolio_builder_token_v1";
+import { getCurrentUserApi, loginApi, logoutApi, refreshSessionApi, registerApi } from "./authApi";
 
 const AuthContext = createContext({
   currentUser: null,
   isAuthenticated: false,
-  token: "",
   loading: true,
   login: async () => ({ ok: false }),
   register: async () => ({ ok: false }),
-  logout: () => {},
+  logout: async () => {},
 });
 
 export const AuthProvider = ({ children }) => {
-  const [token, setToken] = useState(() => localStorage.getItem(TOKEN_KEY) || "");
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -22,29 +18,22 @@ export const AuthProvider = ({ children }) => {
     let cancelled = false;
 
     const loadUser = async () => {
-      if (!token) {
-        if (!cancelled) {
-          setCurrentUser(null);
-          setLoading(false);
-        }
-        return;
-      }
-
       try {
-        const payload = await getCurrentUserApi(token);
-        if (!cancelled) {
-          setCurrentUser(payload.user || null);
-        }
-      } catch {
-        if (!cancelled) {
-          localStorage.removeItem(TOKEN_KEY);
-          setToken("");
-          setCurrentUser(null);
+        const payload = await getCurrentUserApi();
+        if (!cancelled) setCurrentUser(payload.user || null);
+      } catch (error) {
+        if (error?.status === 401) {
+          try {
+            const refreshed = await refreshSessionApi();
+            if (!cancelled) setCurrentUser(refreshed.user || null);
+          } catch {
+            if (!cancelled) setCurrentUser(null);
+          }
+        } else if (!cancelled) {
+          setCurrentUser((prev) => prev);
         }
       } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
+        if (!cancelled) setLoading(false);
       }
     };
 
@@ -52,20 +41,17 @@ export const AuthProvider = ({ children }) => {
     return () => {
       cancelled = true;
     };
-  }, [token]);
+  }, []);
 
   const value = useMemo(
     () => ({
       currentUser,
-      token,
       loading,
       isAuthenticated: Boolean(currentUser),
       login: async (payload) => {
         try {
           const result = await loginApi(payload);
-          localStorage.setItem(TOKEN_KEY, result.token);
-          setToken(result.token);
-          setCurrentUser(result.user);
+          setCurrentUser(result.user || null);
           return { ok: true, user: result.user };
         } catch (error) {
           return { ok: false, error: error.message || "Login failed." };
@@ -74,21 +60,23 @@ export const AuthProvider = ({ children }) => {
       register: async (payload) => {
         try {
           const result = await registerApi(payload);
-          localStorage.setItem(TOKEN_KEY, result.token);
-          setToken(result.token);
-          setCurrentUser(result.user);
+          setCurrentUser(result.user || null);
           return { ok: true, user: result.user };
         } catch (error) {
           return { ok: false, error: error.message || "Registration failed." };
         }
       },
-      logout: () => {
-        localStorage.removeItem(TOKEN_KEY);
-        setToken("");
-        setCurrentUser(null);
+      logout: async () => {
+        try {
+          await logoutApi();
+        } catch {
+          // noop
+        } finally {
+          setCurrentUser(null);
+        }
       },
     }),
-    [currentUser, loading, token]
+    [currentUser, loading]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

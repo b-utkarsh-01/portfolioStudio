@@ -3,18 +3,10 @@ import { apiRequest } from "../api/http";
 export const getPortfolioByUsernameApi = (username) =>
   apiRequest(`/portfolios/${encodeURIComponent(username)}`);
 
-export const getMyPortfolioApi = (token) =>
-  apiRequest("/portfolios/me", {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+export const getMyPortfolioApi = () => apiRequest("/portfolios/me");
 
-export const upsertMyPortfolioApi = (token, payload) =>
+export const upsertMyPortfolioApi = (payload) =>
   apiRequest("/portfolios/me", {
     method: "PUT",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
     body: JSON.stringify(payload),
   });

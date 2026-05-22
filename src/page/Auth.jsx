@@ -1,12 +1,25 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../features/auth/AuthContext";
+import AuthModeToggle from "./auth/components/AuthModeToggle";
+import LoginForm from "./auth/components/LoginForm";
+import RegisterForm from "./auth/components/RegisterForm";
+import RegisterStageSidebar from "./auth/components/RegisterStageSidebar";
+import { REGISTER_STAGES } from "./auth/registerStages";
 
 const Auth = () => {
   const [mode, setMode] = useState("login");
+  const [stageIndex, setStageIndex] = useState(0);
   const [username, setUsername] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [titles, setTitles] = useState("");
+  const [summary, setSummary] = useState("");
+  const [github, setGithub] = useState("");
+  const [githubHref, setGithubHref] = useState("");
+  const [badgeTitle, setBadgeTitle] = useState("");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -15,6 +28,30 @@ const Auth = () => {
   const location = useLocation();
 
   const redirectTo = location.state?.from?.pathname || "";
+  const templateIntent = location.state?.templateId || location.state?.from?.state?.templateId || "";
+  const isRegister = mode === "register";
+  const isLastStage = stageIndex === REGISTER_STAGES.length - 1;
+  const activeStage = REGISTER_STAGES[stageIndex]?.key;
+
+  const stageErrors = useMemo(() => {
+    const errors = {};
+    if (!username.trim() || !password.trim()) errors.account = "Username and password are required.";
+    if (!email.trim()) errors.contact = "Contact email is required.";
+    return errors;
+  }, [email, password, username]);
+
+  const validateCurrentStage = () => {
+    if (!isRegister) return true;
+    if (activeStage === "account" && stageErrors.account) {
+      setError(stageErrors.account);
+      return false;
+    }
+    if (activeStage === "contact" && stageErrors.contact) {
+      setError(stageErrors.contact);
+      return false;
+    }
+    return true;
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -24,11 +61,22 @@ const Auth = () => {
       setError("Username and password are required.");
       return;
     }
+    if (mode === "register" && !email.trim()) {
+      setError("Contact email is required.");
+      return;
+    }
 
     const payload = {
       username: username.trim(),
       password,
       displayName: displayName.trim(),
+      email: email.trim(),
+      phone: phone.trim(),
+      titles: titles.trim(),
+      summary: summary.trim(),
+      github: github.trim(),
+      githubHref: githubHref.trim(),
+      badgeTitle: badgeTitle.trim(),
     };
 
     setSubmitting(true);
@@ -39,82 +87,99 @@ const Auth = () => {
       return;
     }
 
-    const resolvedUsername = result.user?.username || username.trim().toLowerCase();
-    const defaultTarget = mode === "login" ? `/u/${resolvedUsername}` : "/dashboard";
-    navigate(redirectTo || defaultTarget, { replace: true });
+    const defaultTarget = templateIntent ? "/dashboard" : mode === "login" ? "/" : "/dashboard";
+    navigate(redirectTo || defaultTarget, {
+      replace: true,
+      state: templateIntent ? { templateId: templateIntent, fromAuthFlow: true } : undefined,
+    });
   };
 
   return (
-    <div className="mx-auto w-full max-w-md rounded-3xl border border-slate-700 bg-slate-900/70 p-6 sm:p-8">
+    <div
+      className={`mx-auto w-full rounded-3xl border border-slate-700 bg-slate-900/70 p-6 transition-all duration-300 ease-out sm:p-8 ${
+        mode === "register" ? "max-w-5xl" : "max-w-md"
+      }`}
+    >
       <h1 className="text-2xl font-semibold text-slate-100">Portfolio Builder</h1>
       <p className="mt-2 text-sm text-slate-300">
-        Login karo aur apna resume data dalke template se portfolio publish karo.
+        Sign in and publish your portfolio quickly. On registration, we prefill your dashboard
+        data automatically.
       </p>
 
-      <div className="mt-5 flex rounded-xl bg-slate-800 p-1">
-        <button
-          type="button"
-          onClick={() => setMode("login")}
-          className={`flex-1 rounded-lg px-3 py-2 text-sm ${
-            mode === "login" ? "bg-orange-500 text-white" : "text-slate-300"
-          }`}
-        >
-          Login
-        </button>
-        <button
-          type="button"
-          onClick={() => setMode("register")}
-          className={`flex-1 rounded-lg px-3 py-2 text-sm ${
-            mode === "register" ? "bg-orange-500 text-white" : "text-slate-300"
-          }`}
-        >
-          Register
-        </button>
-      </div>
+      <AuthModeToggle
+        mode={mode}
+        onLogin={() => {
+          setMode("login");
+          setError("");
+        }}
+        onRegister={() => {
+          setMode("register");
+          setStageIndex(0);
+          setError("");
+        }}
+      />
 
-      <form onSubmit={handleSubmit} className="mt-5 space-y-4">
-        <label className="block text-sm text-slate-200">
-          Username
-          <input
-            value={username}
-            onChange={(event) => setUsername(event.target.value)}
-            placeholder="yourname"
-            className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-slate-100 outline-none focus:border-orange-400"
+      {mode === "login" ? (
+        <LoginForm
+          username={username}
+          password={password}
+          error={error}
+          submitting={submitting}
+          onUsernameChange={(event) => setUsername(event.target.value)}
+          onPasswordChange={(event) => setPassword(event.target.value)}
+          onSubmit={handleSubmit}
+        />
+      ) : (
+        <div className="mt-5 grid gap-4 transition-opacity duration-300 ease-out lg:grid-cols-[150px_minmax(0,1fr)] xl:grid-cols-[170px_minmax(0,1fr)]">
+          <RegisterStageSidebar
+            stages={REGISTER_STAGES}
+            stageIndex={stageIndex}
+            onSelectStage={setStageIndex}
           />
-        </label>
-
-        {mode === "register" ? (
-          <label className="block text-sm text-slate-200">
-            Display Name
-            <input
-              value={displayName}
-              onChange={(event) => setDisplayName(event.target.value)}
-              placeholder="Your Name"
-              className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-slate-100 outline-none focus:border-orange-400"
-            />
-          </label>
-        ) : null}
-
-        <label className="block text-sm text-slate-200">
-          Password
-          <input
-            type="password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-slate-100 outline-none focus:border-orange-400"
+          <RegisterForm
+            stageIndex={stageIndex}
+            totalStages={REGISTER_STAGES.length}
+            activeStage={activeStage}
+            error={error}
+            submitting={submitting}
+            isLastStage={isLastStage}
+            onSubmit={handleSubmit}
+            onBack={() => {
+              setError("");
+              setStageIndex((prev) => Math.max(prev - 1, 0));
+            }}
+            onNext={() => {
+              setError("");
+              if (!validateCurrentStage()) return;
+              setStageIndex((prev) => Math.min(prev + 1, REGISTER_STAGES.length - 1));
+            }}
+            values={{
+              username,
+              password,
+              email,
+              phone,
+              displayName,
+              titles,
+              summary,
+              github,
+              githubHref,
+              badgeTitle,
+            }}
+            handlers={{
+              onUsernameChange: (event) => setUsername(event.target.value),
+              onPasswordChange: (event) => setPassword(event.target.value),
+              onEmailChange: (event) => setEmail(event.target.value),
+              onPhoneChange: (event) => setPhone(event.target.value),
+              onDisplayNameChange: (event) => setDisplayName(event.target.value),
+              onTitlesChange: (event) => setTitles(event.target.value),
+              onSummaryChange: (event) => setSummary(event.target.value),
+              onGithubChange: (event) => setGithub(event.target.value),
+              onGithubHrefChange: (event) => setGithubHref(event.target.value),
+              onBadgeTitleChange: (event) => setBadgeTitle(event.target.value),
+            }}
           />
-        </label>
-
-        {error ? <p className="text-sm text-rose-300">{error}</p> : null}
-
-        <button
-          type="submit"
-          disabled={submitting}
-          className="w-full rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-orange-400"
-        >
-          {submitting ? "Please wait..." : mode === "register" ? "Create account" : "Login"}
-        </button>
-      </form>
+        </div>
+      )}
     </div>
   );
 };

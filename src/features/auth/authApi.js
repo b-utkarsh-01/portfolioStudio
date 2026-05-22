@@ -12,9 +12,14 @@ export const loginApi = (payload) =>
     body: JSON.stringify(payload),
   });
 
-export const getCurrentUserApi = (token) =>
-  apiRequest("/auth/me", {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+export const getCurrentUserApi = () => apiRequest("/auth/me");
+
+export const refreshSessionApi = () =>
+  apiRequest("/auth/refresh", {
+    method: "POST",
+  });
+
+export const logoutApi = () =>
+  apiRequest("/auth/logout", {
+    method: "POST",
   });
