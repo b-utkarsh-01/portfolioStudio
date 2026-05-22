@@ -1,5 +1,5 @@
-import { defaultTemplates } from "../../../../default-templates/src";
-import { premiumV1Template } from "../../../../premium-templates/src";
+import { defaultTemplates } from "portfolio-studio-default/src";
+import { premiumV1Template } from "portfolio-studio-premium/src";
 
 export const TEMPLATE_CATALOG = [
   ...defaultTemplates,
@@ -8,3 +8,4 @@ export const TEMPLATE_CATALOG = [
 
 export const getTemplateById = (templateId) =>
   TEMPLATE_CATALOG.find((template) => template.id === templateId) || TEMPLATE_CATALOG[0];
+

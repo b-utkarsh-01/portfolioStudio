@@ -1,6 +1,6 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./features/auth/AuthContext";
-import { MarketingLayout, ProtectedRoute } from "../../premium-templates/src";
+import { MarketingLayout, ProtectedRoute } from "portfolio-studio-premium/src";
 import Auth from "./page/Auth";
 import Dashboard from "./page/Dashboard";
 import TemplateV1PreviewPage from "./page/TemplateV1PreviewPage";
@@ -40,3 +40,4 @@ const App = () => (
 );
 
 export default App;
+

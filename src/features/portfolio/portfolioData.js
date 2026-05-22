@@ -5,7 +5,7 @@ import {
   contactIcons,
   skillGroupIcons,
   skillIcons,
-} from "../../../../premium-templates/src/nebula1/about/aboutData";
+} from "portfolio-studio-premium/src/nebula1/about/aboutData";
 import { defaultPortfolioData } from "./defaultPortfolioData";
 
 const {
@@ -221,3 +221,4 @@ export const hydrateRenderData = (rawData) => {
     skillIcons,
   };
 };
+

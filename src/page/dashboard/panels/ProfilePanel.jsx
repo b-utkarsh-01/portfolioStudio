@@ -1,6 +1,6 @@
 import Field from "../Field";
 import { inputClassName } from "../dashboardFormConfig";
-import { premiumV1Template } from "../../../../../premium-templates/src";
+import { premiumV1Template } from "portfolio-studio-premium/src";
 
 const ProfilePanel = ({ form, onFieldChange, onTemplateChange }) => (
   <>
@@ -38,3 +38,4 @@ const ProfilePanel = ({ form, onFieldChange, onTemplateChange }) => (
 );
 
 export default ProfilePanel;
+

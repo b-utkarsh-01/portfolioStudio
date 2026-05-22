@@ -9,7 +9,7 @@ import {
   SimpleHeroSection,
   SkillsSection,
   TestimonialsSection,
-} from "../../../premium-templates/src";
+} from "portfolio-studio-premium/src";
 import { usePortfolioData } from "../features/portfolio/PortfolioDataContext";
 
 const getStage = (stages, id, fallbackTitle) => {
@@ -81,3 +81,4 @@ const About = ({ appReady, templateId = "default-v1" }) => {
 };
 
 export default About;
+
