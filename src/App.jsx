@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./features/auth/AuthContext";
-import { MarketingLayout, ProtectedRoute } from "portfolio-studio-premium/src";
+import MarketingLayout from "./layout/MarketingLayout";
+import ProtectedRoute from "./routing/ProtectedRoute";
 import Auth from "./page/Auth";
 import Dashboard from "./page/Dashboard";
 import TemplateV1PreviewPage from "./page/TemplateV1PreviewPage";
