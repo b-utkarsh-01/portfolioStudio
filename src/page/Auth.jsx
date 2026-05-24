@@ -34,9 +34,10 @@ const Auth = () => {
   const stageErrors = useMemo(() => {
     const errors = {};
     if (!username.trim() || !password.trim()) errors.account = "Username and password are required.";
+    if (!displayName.trim()) errors.profile = "Display name is required.";
     if (!email.trim()) errors.contact = "Contact email is required.";
     return errors;
-  }, [email, password, username]);
+  }, [displayName, email, password, username]);
 
   const validateCurrentStage = () => {
     if (!isRegister) return true;
@@ -46,6 +47,10 @@ const Auth = () => {
     }
     if (activeStage === "contact" && stageErrors.contact) {
       setError(stageErrors.contact);
+      return false;
+    }
+    if (activeStage === "profile" && stageErrors.profile) {
+      setError(stageErrors.profile);
       return false;
     }
     return true;
@@ -61,6 +66,10 @@ const Auth = () => {
     }
     if (mode === "register" && !email.trim()) {
       setError("Contact email is required.");
+      return;
+    }
+    if (mode === "register" && !displayName.trim()) {
+      setError("Display name is required.");
       return;
     }
 
