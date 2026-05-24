@@ -3,7 +3,7 @@ import { decodePortfolioDataFromParam } from "../features/portfolio/urlPortfolio
 import TemplatePortfolioRenderer, {
   getTemplateById,
   TemplatePreviewFrame,
-} from "portfolio-template-renderer/src";
+} from "portfolio-template-renderer";
 import PreviewBackButton from "./PreviewBackButton";
 
 const UrlPortfolioPage = ({ appReady = true }) => {

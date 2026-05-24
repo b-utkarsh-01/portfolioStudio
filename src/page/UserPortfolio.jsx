@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
-import TemplatePortfolioRenderer, { TemplatePreviewFrame } from "portfolio-template-renderer/src";
+import TemplatePortfolioRenderer, { TemplatePreviewFrame } from "portfolio-template-renderer";
 import { getTemplateById } from "../features/portfolio/templateCatalog";
 import { getPortfolioByUsernameApi } from "../features/portfolio/portfolioApi";
 

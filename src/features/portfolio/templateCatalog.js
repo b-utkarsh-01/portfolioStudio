@@ -1,2 +1,2 @@
-export { TEMPLATE_CATALOG, getTemplateById } from "portfolio-template-renderer/src";
+export { TEMPLATE_CATALOG, getTemplateById } from "portfolio-template-renderer";
 

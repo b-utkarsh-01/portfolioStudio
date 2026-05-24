@@ -6,7 +6,7 @@ import { useSearchParams } from "react-router-dom";
 import TemplatePortfolioRenderer, {
   getTemplateById,
   TemplatePreviewFrame,
-} from "portfolio-template-renderer/src";
+} from "portfolio-template-renderer";
 import PreviewBackButton from "./PreviewBackButton";
 
 const TemplateV1PreviewPage = () => {
