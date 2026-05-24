@@ -54,7 +54,7 @@ const Auth = () => {
   };
 
   const handleSubmit = async (event) => {
-    event.preventDefault();
+    if (event?.preventDefault) event.preventDefault();
     setError("");
 
     if (!username.trim() || !password.trim()) {
@@ -87,11 +87,19 @@ const Auth = () => {
       return;
     }
 
-    const defaultTarget = templateIntent ? "/dashboard" : mode === "login" ? "/" : "/dashboard";
-    navigate(redirectTo || defaultTarget, {
+    const loginTarget = redirectTo || "/";
+    const registerTarget = templateIntent ? "/dashboard" : "/templates?tier=default";
+    const target = mode === "register" ? registerTarget : loginTarget;
+
+    navigate(target, {
       replace: true,
       state: templateIntent ? { templateId: templateIntent, fromAuthFlow: true } : undefined,
     });
+  };
+
+  const handleCreateAccount = async () => {
+    if (!isRegister || !isLastStage) return;
+    await handleSubmit();
   };
 
   return (
@@ -144,6 +152,7 @@ const Auth = () => {
             submitting={submitting}
             isLastStage={isLastStage}
             onSubmit={handleSubmit}
+            onCreateAccount={handleCreateAccount}
             onBack={() => {
               setError("");
               setStageIndex((prev) => Math.max(prev - 1, 0));

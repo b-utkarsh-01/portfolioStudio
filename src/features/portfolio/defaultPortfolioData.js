@@ -20,7 +20,7 @@ export const defaultPortfolioData = {
       { type: "email", text: "you@example.com", href: "mailto:you@example.com" },
       {
         type: "github",
-        text: "github.com/your-username",
+        text: "your-username",
         href: "https://github.com/your-username",
         external: true,
       },

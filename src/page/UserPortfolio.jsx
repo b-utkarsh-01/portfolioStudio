@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
-import About from "./About";
+import TemplatePortfolioRenderer, { TemplatePreviewFrame } from "portfolio-template-renderer/src";
+import { getTemplateById } from "../features/portfolio/templateCatalog";
 import { getPortfolioByUsernameApi } from "../features/portfolio/portfolioApi";
-import TemplateV1Layout from "../templates/TemplateV1Layout";
 
 const UserPortfolio = ({ appReady, withTemplateLayout = false }) => {
   const { username = "" } = useParams();
@@ -36,26 +36,44 @@ const UserPortfolio = ({ appReady, withTemplateLayout = false }) => {
     const loadingView = (
       <div className="mx-auto max-w-4xl py-20 text-center text-slate-300">Loading...</div>
     );
-    return withTemplateLayout ? (
-      <TemplateV1Layout portfolioData={portfolio?.data}>{loadingView}</TemplateV1Layout>
-    ) : (
-      loadingView
-    );
+    return loadingView;
   }
 
   if (notFound || !portfolio?.data) {
     return <Navigate to="/" replace />;
   }
 
-  const content = <About appReady={appReady} templateId={portfolio?.templateId || "premium-v1"} />;
+  const resolvedTemplateId = getTemplateById(portfolio?.templateId || "default-v4")?.id || "default-v4";
+  const previewTheme = resolvedTemplateId.startsWith("premium-") ? "premium" : "neutral";
+  const content = (
+    <TemplatePortfolioRenderer
+      appReady={appReady}
+      templateId={resolvedTemplateId}
+      portfolioData={portfolio.data}
+    />
+  );
 
-  return withTemplateLayout ? (
-    <TemplateV1Layout portfolioData={portfolio.data} templateId={portfolio.templateId}>
+  if (!withTemplateLayout) return content;
+
+  if (previewTheme === "premium") {
+    return (
+      <TemplatePreviewFrame
+        templateId={resolvedTemplateId}
+        portfolioData={portfolio.data}
+        showPreviewLabel={false}
+      >
+        {content}
+      </TemplatePreviewFrame>
+    );
+  }
+
+  return (
+    <>
       {content}
-    </TemplateV1Layout>
-  ) : (
-    content
+    </>
   );
 };
 
 export default UserPortfolio;
+
+

@@ -10,13 +10,23 @@ const DashboardForm = ({
   form,
   onSubmit,
   onFieldChange,
-  onTemplateChange,
+  onSkillGroupAdd,
+  onSkillGroupRemove,
+  onSkillGroupNameChange,
+  onSkillAdd,
+  onSkillRemove,
+  onSkillChange,
+  onWorkItemAdd,
+  onWorkItemRemove,
+  onWorkItemChange,
+  onCollectionItemAdd,
+  onCollectionItemRemove,
+  onCollectionItemChange,
   onStageTitleChange,
   onStageToggle,
   onAddStage,
   onResetDefaults,
   onCustomStageChange,
-  canUsePremium,
   urlDataPortfolioPath,
   savedAt,
   statusDetails = [],
@@ -49,8 +59,12 @@ const DashboardForm = ({
   const ActivePanel = StagePanels[activeStageKey];
   const isCustomStage = !ActivePanel && stageIndex >= DEFAULT_STAGES.length;
 
+  const handleSaveClick = () => {
+    onSubmit?.();
+  };
+
   return (
-    <form onSubmit={onSubmit} className="grid gap-4 lg:grid-cols-[220px_minmax(0,1fr)]">
+    <div className="grid gap-4 lg:grid-cols-[220px_minmax(0,1fr)]">
       <StageSidebar
         stages={stages}
         stageIndex={stageIndex}
@@ -82,7 +96,22 @@ const DashboardForm = ({
         </div>
 
         {ActivePanel ? (
-          <ActivePanel form={form} onFieldChange={onFieldChange} onTemplateChange={onTemplateChange} canUsePremium={canUsePremium} />
+          <ActivePanel
+            form={form}
+            onFieldChange={onFieldChange}
+            onSkillGroupAdd={onSkillGroupAdd}
+            onSkillGroupRemove={onSkillGroupRemove}
+            onSkillGroupNameChange={onSkillGroupNameChange}
+            onSkillAdd={onSkillAdd}
+            onSkillRemove={onSkillRemove}
+            onSkillChange={onSkillChange}
+            onWorkItemAdd={onWorkItemAdd}
+            onWorkItemRemove={onWorkItemRemove}
+            onWorkItemChange={onWorkItemChange}
+            onCollectionItemAdd={onCollectionItemAdd}
+            onCollectionItemRemove={onCollectionItemRemove}
+            onCollectionItemChange={onCollectionItemChange}
+          />
         ) : null}
 
         {isCustomStage ? (
@@ -116,7 +145,8 @@ const DashboardForm = ({
               </button>
             ) : (
               <button
-                type="submit"
+                type="button"
+                onClick={handleSaveClick}
                 className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-400"
               >
                 Save Portfolio
@@ -147,7 +177,7 @@ const DashboardForm = ({
           </div>
         ) : null}
       </section>
-    </form>
+    </div>
   );
 };
 

@@ -81,6 +81,142 @@ const Dashboard = () => {
     setForm((prev) => ({ ...prev, [field]: event.target.value }));
   };
 
+  const addSkillGroup = () => {
+    setForm((prev) => ({
+      ...prev,
+      skillsAdditionalGroups: [
+        ...(Array.isArray(prev.skillsAdditionalGroups) ? prev.skillsAdditionalGroups : []),
+        {
+          id: `skill-group-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`,
+          name: "",
+          skills: [""],
+        },
+      ],
+    }));
+  };
+
+  const removeSkillGroup = (groupId) => {
+    setForm((prev) => ({
+      ...prev,
+      skillsAdditionalGroups: (Array.isArray(prev.skillsAdditionalGroups) ? prev.skillsAdditionalGroups : []).filter(
+        (group) => group.id !== groupId
+      ),
+    }));
+  };
+
+  const updateSkillGroupName = (groupId, name) => {
+    setForm((prev) => ({
+      ...prev,
+      skillsAdditionalGroups: (Array.isArray(prev.skillsAdditionalGroups) ? prev.skillsAdditionalGroups : []).map(
+        (group) => (group.id === groupId ? { ...group, name } : group)
+      ),
+    }));
+  };
+
+  const addSkillToGroup = (groupId) => {
+    setForm((prev) => ({
+      ...prev,
+      skillsAdditionalGroups: (Array.isArray(prev.skillsAdditionalGroups) ? prev.skillsAdditionalGroups : []).map(
+        (group) =>
+          group.id === groupId
+            ? {
+                ...group,
+                skills: [...(Array.isArray(group.skills) ? group.skills : []), ""],
+              }
+            : group
+      ),
+    }));
+  };
+
+  const removeSkillFromGroup = (groupId, skillIndex) => {
+    setForm((prev) => ({
+      ...prev,
+      skillsAdditionalGroups: (Array.isArray(prev.skillsAdditionalGroups) ? prev.skillsAdditionalGroups : []).map(
+        (group) => {
+          if (group.id !== groupId) return group;
+          const nextSkills = (Array.isArray(group.skills) ? group.skills : []).filter((_, index) => index !== skillIndex);
+          return { ...group, skills: nextSkills.length ? nextSkills : [""] };
+        }
+      ),
+    }));
+  };
+
+  const updateSkillInGroup = (groupId, skillIndex, value) => {
+    setForm((prev) => ({
+      ...prev,
+      skillsAdditionalGroups: (Array.isArray(prev.skillsAdditionalGroups) ? prev.skillsAdditionalGroups : []).map(
+        (group) => {
+          if (group.id !== groupId) return group;
+          const nextSkills = [...(Array.isArray(group.skills) ? group.skills : [])];
+          nextSkills[skillIndex] = value;
+          return { ...group, skills: nextSkills };
+        }
+      ),
+    }));
+  };
+
+  const addWorkItem = (collectionKey, emptyItem) => {
+    setForm((prev) => ({
+      ...prev,
+      [collectionKey]: [
+        ...(Array.isArray(prev[collectionKey]) ? prev[collectionKey] : []),
+        {
+          id: `work-item-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`,
+          ...emptyItem,
+        },
+      ],
+    }));
+  };
+
+  const removeWorkItem = (collectionKey, itemId) => {
+    setForm((prev) => ({
+      ...prev,
+      [collectionKey]: (Array.isArray(prev[collectionKey]) ? prev[collectionKey] : []).filter(
+        (item) => item.id !== itemId
+      ),
+    }));
+  };
+
+  const updateWorkItemField = (collectionKey, itemId, field, value) => {
+    setForm((prev) => ({
+      ...prev,
+      [collectionKey]: (Array.isArray(prev[collectionKey]) ? prev[collectionKey] : []).map((item) =>
+        item.id === itemId ? { ...item, [field]: value } : item
+      ),
+    }));
+  };
+
+  const addCollectionItem = (collectionKey, emptyItem) => {
+    setForm((prev) => ({
+      ...prev,
+      [collectionKey]: [
+        ...(Array.isArray(prev[collectionKey]) ? prev[collectionKey] : []),
+        {
+          id: `collection-item-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`,
+          ...emptyItem,
+        },
+      ],
+    }));
+  };
+
+  const removeCollectionItem = (collectionKey, itemId) => {
+    setForm((prev) => ({
+      ...prev,
+      [collectionKey]: (Array.isArray(prev[collectionKey]) ? prev[collectionKey] : []).filter(
+        (item) => item.id !== itemId
+      ),
+    }));
+  };
+
+  const updateCollectionItemField = (collectionKey, itemId, field, value) => {
+    setForm((prev) => ({
+      ...prev,
+      [collectionKey]: (Array.isArray(prev[collectionKey]) ? prev[collectionKey] : []).map((item) =>
+        item.id === itemId ? { ...item, [field]: value } : item
+      ),
+    }));
+  };
+
   const updateStageTitle = (stageId, title) => {
     setForm((prev) => ({
       ...prev,
@@ -147,7 +283,7 @@ const Dashboard = () => {
   };
 
   const handleSave = async (event) => {
-    event.preventDefault();
+    if (event?.preventDefault) event.preventDefault();
     if (!isAuthenticated) return;
     setStatusDetails([]);
 
@@ -187,27 +323,34 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="mx-auto w-full max-w-5xl rounded-3xl border border-slate-700 bg-slate-900/60 p-4 sm:p-6">
+    <div className="mx-auto w-full rounded-3xl border border-slate-700 bg-slate-900/60 p-4">
       <DashboardHeader username={currentUser?.username} profileUrl={profileUrl} onLogout={handleLogout} />
 
-      <PublicPortfolioUrlCard publicPortfolioUrl={publicPortfolioUrl} onCopy={handleCopyPublicUrl} />
+      {savedAt ? (
+        <PublicPortfolioUrlCard publicPortfolioUrl={publicPortfolioUrl} onCopy={handleCopyPublicUrl} />
+      ) : null}
 
       <DashboardForm
         form={form}
         onSubmit={handleSave}
         onFieldChange={updateField}
-        onTemplateChange={(event) =>
-          setForm((prev) => ({
-            ...prev,
-            templateId: event.target.value,
-          }))
-        }
+        onSkillGroupAdd={addSkillGroup}
+        onSkillGroupRemove={removeSkillGroup}
+        onSkillGroupNameChange={updateSkillGroupName}
+        onSkillAdd={addSkillToGroup}
+        onSkillRemove={removeSkillFromGroup}
+        onSkillChange={updateSkillInGroup}
+        onWorkItemAdd={addWorkItem}
+        onWorkItemRemove={removeWorkItem}
+        onWorkItemChange={updateWorkItemField}
+        onCollectionItemAdd={addCollectionItem}
+        onCollectionItemRemove={removeCollectionItem}
+        onCollectionItemChange={updateCollectionItemField}
         onStageTitleChange={updateStageTitle}
         onStageToggle={toggleStageEnabled}
         onAddStage={addCustomStage}
         onResetDefaults={resetToDefault}
         onCustomStageChange={updateCustomStage}
-        canUsePremium
         urlDataPortfolioPath={urlDataPortfolioPath}
         savedAt={savedAt}
         statusDetails={statusDetails}

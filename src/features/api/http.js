@@ -5,6 +5,7 @@ export const apiRequest = async (path, options = {}) => {
   const call = () =>
     fetch(`${API_BASE_URL}${path}`, {
       credentials: "include",
+      cache: "no-store",
       headers: {
         "Content-Type": "application/json",
         ...customHeaders,
@@ -15,6 +16,17 @@ export const apiRequest = async (path, options = {}) => {
   let response;
   try {
     response = await call();
+    if (response.status === 304) {
+      response = await fetch(`${API_BASE_URL}${path}`, {
+        credentials: "include",
+        cache: "reload",
+        headers: {
+          "Content-Type": "application/json",
+          ...customHeaders,
+        },
+        ...restOptions,
+      });
+    }
   } catch (networkError) {
     const error = new Error("Network error. Please check your connection.");
     error.code = "NETWORK_ERROR";

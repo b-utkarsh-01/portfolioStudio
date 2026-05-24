@@ -1,4 +1,4 @@
-export const templateV1PreviewData = {
+const basePreviewData = {
   profile: {
     name: "Alex Carter",
     title: ["Full Stack Developer", "MERN Engineer"],
@@ -95,3 +95,26 @@ export const templateV1PreviewData = {
     },
   ],
 };
+
+const deepClone = (value) => JSON.parse(JSON.stringify(value));
+
+export const defaultTemplatePreviewData = deepClone(basePreviewData);
+
+export const premiumTemplatePreviewData = (() => {
+  const data = deepClone(basePreviewData);
+  data.profile.name = "Alex Hales";
+  data.profile.title = ["REST API & MongoDB Specialist", "Backend Engineer"];
+  data.badgeName = {
+    name: "AL",
+    logo: "AL",
+    badgeTitle: "Portfolio Builder User",
+  };
+  return data;
+})();
+
+export const getPreviewDataForTemplateId = (templateId) =>
+  `${templateId || ""}`.startsWith("premium-")
+    ? deepClone(premiumTemplatePreviewData)
+    : deepClone(defaultTemplatePreviewData);
+
+export const templateV1PreviewData = defaultTemplatePreviewData;

@@ -10,10 +10,11 @@ const RegisterForm = ({
   values,
   handlers,
   onSubmit,
+  onCreateAccount,
   onBack,
   onNext,
 }) => (
-  <form onSubmit={onSubmit} className="space-y-4 rounded-2xl border border-slate-700 bg-slate-950/30 p-4 sm:p-5">
+  <div className="space-y-4 rounded-2xl border border-slate-700 bg-slate-950/30 p-4 sm:p-5">
     <p className="text-xs text-slate-400">
       Step {stageIndex + 1} of {totalStages}
     </p>
@@ -42,7 +43,8 @@ const RegisterForm = ({
         </button>
       ) : (
         <button
-          type="submit"
+          type="button"
+          onClick={onCreateAccount}
           disabled={submitting}
           className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-400"
         >
@@ -50,7 +52,7 @@ const RegisterForm = ({
         </button>
       )}
     </div>
-  </form>
+  </div>
 );
 
 export default RegisterForm;

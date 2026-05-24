@@ -1,41 +1,81 @@
 import Field from "../Field";
 import { inputClassName } from "../dashboardFormConfig";
-import { premiumV1Template } from "portfolio-studio-premium/src";
+import { Trash2 } from "lucide-react";
 
-const ProfilePanel = ({ form, onFieldChange, onTemplateChange }) => (
-  <>
-    <div className="rounded-2xl border border-slate-700 bg-slate-950/40 p-4">
-      <h3 className="mb-3 text-sm font-semibold text-slate-100">Template</h3>
-      <div className="grid gap-2 sm:grid-cols-4">
-        <label className="inline-flex items-center gap-2 text-sm text-slate-200">
-          <input type="radio" name="templateId" value="default-v1" checked={form.templateId === "default-v1"} onChange={onTemplateChange} />
-          Default 1
-        </label>
-        <label className="inline-flex items-center gap-2 text-sm text-slate-200">
-          <input type="radio" name="templateId" value="default-v2" checked={form.templateId === "default-v2"} onChange={onTemplateChange} />
-          Default 2
-        </label>
-        <label className="inline-flex items-center gap-2 text-sm text-slate-200">
-          <input type="radio" name="templateId" value="default-v3" checked={form.templateId === "default-v3"} onChange={onTemplateChange} />
-          Default 3
-        </label>
-        <label className="inline-flex items-center gap-2 text-sm text-slate-200">
-          <input type="radio" name="templateId" value={premiumV1Template.id} checked={form.templateId === premiumV1Template.id} onChange={onTemplateChange} />
-          Premium
-        </label>
+const removeBtnClass =
+  "inline-flex h-10 w-10 items-center justify-center rounded-lg border border-rose-500/70 text-rose-300 hover:bg-rose-500/20 hover:text-rose-200 focus:outline-none focus:ring-2 focus:ring-rose-400/60";
+
+const getTitles = (titles) => {
+  const list = `${titles ?? ""}`.split("\n");
+  if (!list.length) return [""];
+  return list;
+};
+
+const ProfilePanel = ({ form, onFieldChange }) => {
+  const titles = getTitles(form.titles);
+
+  const updateTitles = (nextTitles) => {
+    const normalized = nextTitles.length ? nextTitles : [""];
+    const value = normalized.join("\n");
+    onFieldChange("titles")({ target: { value } });
+  };
+
+  const addTitle = () => updateTitles([...titles, ""]);
+  const removeTitle = (index) => updateTitles(titles.filter((_, i) => i !== index));
+  const changeTitle = (index, value) =>
+    updateTitles(titles.map((item, i) => (i === index ? value : item)));
+
+  return (
+    <>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Field label="Name"><input value={form.name} onChange={onFieldChange("name")} className={inputClassName} /></Field>
+        <Field label="Badge Name (For Nav Bar)"><input value={form.badgeName} onChange={onFieldChange("badgeName")} className={inputClassName} /></Field>
+        <Field label="Badge Logo"><input value={form.badgeLogo} onChange={onFieldChange("badgeLogo")} className={inputClassName} /></Field>
+        <Field label="Badge Title"><input value={form.badgeTitle} onChange={onFieldChange("badgeTitle")} className={inputClassName} /></Field>
       </div>
-    </div>
-    <div className="grid gap-4 sm:grid-cols-2">
-      <Field label="Name"><input value={form.name} onChange={onFieldChange("name")} className={inputClassName} /></Field>
-      <Field label="Badge Name (For Nav Bar)"><input value={form.badgeName} onChange={onFieldChange("badgeName")} className={inputClassName} /></Field>
-      <Field label="Badge Logo"><input value={form.badgeLogo} onChange={onFieldChange("badgeLogo")} className={inputClassName} /></Field>
-      <Field label="Badge Title"><input value={form.badgeTitle} onChange={onFieldChange("badgeTitle")} className={inputClassName} /></Field>
-    </div>
-    <Field label="Titles" hint="One title per line"><textarea value={form.titles} onChange={onFieldChange("titles")} rows={4} className={inputClassName} /></Field>
-    <Field label="Summary"><textarea value={form.summary} onChange={onFieldChange("summary")} rows={3} className={inputClassName} /></Field>
-    <Field label="Highlights (comma separated)"><input value={form.highlights} onChange={onFieldChange("highlights")} className={inputClassName} /></Field>
-  </>
-);
+
+      <section className="rounded-xl border border-slate-700 bg-slate-900/30 p-4">
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <div>
+            <p className="text-sm font-semibold text-slate-100">Titles</p>
+            <p className="text-xs text-slate-400">Add role titles one by one.</p>
+          </div>
+          <button
+            type="button"
+            onClick={addTitle}
+            className="rounded-lg border border-cyan-400/60 px-3 py-2 text-xs font-semibold text-cyan-300 hover:bg-cyan-500/10"
+          >
+            + Add Title
+          </button>
+        </div>
+        <div className="space-y-3">
+          {(titles.length ? titles : [""]).map((title, index) => (
+            <div key={`title-${index}`} className="flex items-center gap-2">
+              <input
+                value={title}
+                onChange={(event) => changeTitle(index, event.target.value)}
+                placeholder="Title (e.g., Full Stack Developer)"
+                className={`${inputClassName} mt-0`}
+              />
+              <button
+                type="button"
+                onClick={() => removeTitle(index)}
+                className={removeBtnClass}
+                title="Remove title"
+                aria-label="Remove title"
+              >
+                <Trash2 className="h-4 w-4" />
+              </button>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <Field label="Summary"><textarea value={form.summary} onChange={onFieldChange("summary")} rows={3} className={inputClassName} /></Field>
+      <Field label="Highlights (comma separated)"><input value={form.highlights} onChange={onFieldChange("highlights")} className={inputClassName} /></Field>
+    </>
+  );
+};
 
 export default ProfilePanel;
 
