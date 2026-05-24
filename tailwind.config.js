@@ -4,6 +4,8 @@ export default {
     content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
+    "./node_modules/portfolio-studio-premium/src/**/*.{js,jsx,ts,tsx}",
+    "./node_modules/portfolio-studio-default/src/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
   	extend: {

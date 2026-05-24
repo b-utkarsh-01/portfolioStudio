@@ -1,51 +1,63 @@
-﻿import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../features/auth/AuthContext";
 import { TEMPLATE_CATALOG } from "../features/portfolio/templateCatalog";
-import { useEffect, useMemo, useState } from "react";
-import { getTemplatesApi } from "../features/portfolio/templateApi";
+import { useMemo, useState } from "react";
 
 const TemplatesPage = () => {
   const { isAuthenticated, currentUser } = useAuth();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const myPortfolioUrl = currentUser?.username ? `/u/${currentUser.username}` : "/auth";
-  const [activeTier, setActiveTier] = useState("default");
-  const [templates, setTemplates] = useState(TEMPLATE_CATALOG);
+  const initialTier = searchParams.get("tier");
+  const isValidTier = initialTier === "default" || initialTier === "premium" || initialTier === "ai";
+  const [activeTier, setActiveTier] = useState(isValidTier ? initialTier : "default");
+  const [templates] = useState(TEMPLATE_CATALOG);
 
-  useEffect(() => {
-    let cancelled = false;
-
-    const loadTemplates = async () => {
-      try {
-        const payload = await getTemplatesApi();
-        const incomingTemplates = Array.isArray(payload?.templates) ? payload.templates : [];
-        if (!cancelled && incomingTemplates.length) {
-          setTemplates(incomingTemplates);
-        }
-      } catch {
-        if (!cancelled) {
-          setTemplates(TEMPLATE_CATALOG);
-        }
-      }
-    };
-
-    loadTemplates();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  const handleTierChange = (tier) => {
+    setActiveTier(tier);
+    setSearchParams({ tier });
+  };
 
   const visibleTemplates = useMemo(
-    () => templates.filter((template) => template.tier === activeTier),
+    () =>
+      templates.filter(
+        (template) =>
+          template &&
+          typeof template.id === "string" &&
+          typeof template.tier === "string" &&
+          template.tier === activeTier
+      ),
     [activeTier, templates]
   );
+  const showComingSoonBanner = activeTier === "ai" || visibleTemplates.length === 0;
+
+  const comingSoonContent = useMemo(() => {
+    if (activeTier === "ai") {
+      return {
+        title: "AI Portfolio Builder",
+        description: "One-click AI-generated portfolios are in progress.",
+      };
+    }
+
+    if (activeTier === "default") {
+      return {
+        title: "Default Templates",
+        description: "New default templates are being prepared for release.",
+      };
+    }
+
+    return {
+      title: "Premium Templates",
+      description: "More premium templates are being prepared for release.",
+    };
+  }, [activeTier]);
 
   const modeButtonClass = (tier) =>
     [
-      "rounded-xl px-4 py-2 text-left text-2xl font-medium transition-colors sm:text-3xl",
+      "relative rounded-xl px-4 py-2 text-left text-2xl font-medium transition-all duration-200 sm:text-3xl",
       activeTier === tier
-        ? "border border-slate-200 text-slate-100"
-        : "border border-transparent text-slate-300 hover:text-slate-100",
+        ? "border border-slate-100/80 bg-slate-900/70 text-slate-50 shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_10px_30px_rgba(0,0,0,0.35)] scale-[1.02]"
+        : "border border-transparent text-slate-300 hover:text-slate-100 hover:bg-slate-900/35",
     ].join(" ");
 
   const handleUseTemplate = (templateId) => {
@@ -73,16 +85,32 @@ const TemplatesPage = () => {
           <div className="flex flex-col justify-center gap-3">
             <button
               type="button"
-              onClick={() => setActiveTier("premium")}
+              onClick={() => handleTierChange("ai")}
+              className={modeButtonClass("ai")}
+            >
+              {activeTier === "ai" ? (
+                <span className="absolute left-0 top-1/2 h-7 w-1 -translate-y-1/2 rounded-r bg-cyan-300" />
+              ) : null}
+              AI
+            </button>
+            <button
+              type="button"
+              onClick={() => handleTierChange("premium")}
               className={modeButtonClass("premium")}
             >
+              {activeTier === "premium" ? (
+                <span className="absolute left-0 top-1/2 h-7 w-1 -translate-y-1/2 rounded-r bg-orange-300" />
+              ) : null}
               Premium
             </button>
             <button
               type="button"
-              onClick={() => setActiveTier("default")}
+              onClick={() => handleTierChange("default")}
               className={modeButtonClass("default")}
             >
+              {activeTier === "default" ? (
+                <span className="absolute left-0 top-1/2 h-7 w-1 -translate-y-1/2 rounded-r bg-emerald-300" />
+              ) : null}
               Default
             </button>
           </div>
@@ -91,12 +119,18 @@ const TemplatesPage = () => {
         <div className="hidden h-full min-h-[420px] rounded-full bg-slate-600/70 lg:block" />
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {activeTier === "default" && visibleTemplates.length === 0 ? (
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-5 text-slate-300">
-              Default templates are coming soon.
+          {showComingSoonBanner ? (
+            <div className="sm:col-span-2 lg:col-span-3 rounded-2xl border border-slate-700 bg-slate-900/60 p-7 text-center min-h-[220px] flex flex-col items-center justify-center">
+              <p className="text-xs uppercase tracking-[0.2em] text-orange-300">Coming Soon</p>
+              <h2 className="mt-3 text-2xl font-semibold text-slate-100">
+                {comingSoonContent.title}
+              </h2>
+              <p className="mt-2 text-slate-300">
+                {comingSoonContent.description}
+              </p>
             </div>
           ) : null}
-          {visibleTemplates.map((template, index) => (
+          {!showComingSoonBanner && visibleTemplates.map((template, index) => (
             <article key={template.id} className="rounded-2xl border border-slate-800 bg-slate-900/40 p-5">
               <p className="text-xs uppercase tracking-wide text-orange-300">
                 Template {`${index + 1}`.padStart(2, "0")} | {template.tier}

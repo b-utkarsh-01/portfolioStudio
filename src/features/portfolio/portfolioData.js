@@ -1,12 +1,11 @@
-import {
-  sectionIcons,
-  experienceIcons,
-  projectIcons,
-  contactIcons,
-  skillGroupIcons,
-  skillIcons,
-} from "portfolio-studio-premium/src/nebula1/about/aboutData";
 import { defaultPortfolioData } from "./defaultPortfolioData";
+
+const sectionIcons = {};
+const experienceIcons = {};
+const projectIcons = {};
+const contactIcons = {};
+const skillGroupIcons = {};
+const skillIcons = {};
 
 const {
   layout: defaultLayout,
