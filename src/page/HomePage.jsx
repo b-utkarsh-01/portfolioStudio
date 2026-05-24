@@ -11,9 +11,8 @@ const HomePage = () => {
       <h1 className="max-w-3xl text-4xl font-semibold leading-tight text-slate-100 sm:text-5xl">
         Build and publish your portfolio in minutes.
       </h1>
-      <p className="max-w-2xl text-lg leading-relaxed text-slate-300 sm:text-xl">
-        Portfolio Studio lets you add your resume data, choose a template, and generate a public
-        portfolio link you can share with recruiters.
+      <p className="text-justify max-w-2xl text-lg leading-relaxed text-slate-300 sm:text-xl">
+        Portfolio Studio lets you add your resume data, choose a template, and generate a public portfolio link you can share with recruiters.
       </p>
 
       <div className="grid gap-3 sm:grid-cols-3">

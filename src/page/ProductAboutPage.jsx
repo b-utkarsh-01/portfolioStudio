@@ -1,9 +1,8 @@
 const ProductAboutPage = () => (
   <section className="space-y-5 rounded-2xl border border-slate-800 bg-slate-900/40 p-5 sm:space-y-6 sm:rounded-3xl sm:p-12">
     <h1 className="text-4xl font-semibold leading-tight text-slate-100 sm:text-4xl">About Portfolio Studio</h1>
-    <p className="max-w-3xl text-lg leading-relaxed text-slate-300 sm:text-xl">
-      Portfolio Studio is a full-stack platform designed to help professionals, students, and
-      creators build polished portfolios quickly without starting from zero.
+    <p className="text-justify max-w-3xl text-lg leading-relaxed text-slate-300 sm:text-xl">
+      Portfolio Studio is a full-stack platform designed to help professionals, students, and creators build polished portfolios quickly without starting from zero.
     </p>
 
     <div className="grid gap-4 sm:grid-cols-2">

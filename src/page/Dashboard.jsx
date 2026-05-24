@@ -38,7 +38,7 @@ const Dashboard = () => {
               data: nextData,
             });
             setForm(buildFormState(nextData, templateIntent));
-            setSavedAt(Date.now());
+            setSavedAt(null);
             toast.success("Template applied. You can now edit and publish.");
             navigate("/dashboard", { replace: true });
             return;

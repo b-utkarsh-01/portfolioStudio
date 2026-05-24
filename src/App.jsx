@@ -4,6 +4,7 @@ import MarketingLayout from "./layout/MarketingLayout";
 import ProtectedRoute from "./routing/ProtectedRoute";
 import Auth from "./page/Auth";
 import Dashboard from "./page/Dashboard";
+import ProfilePage from "./page/ProfilePage";
 import TemplateV1PreviewPage from "./page/TemplateV1PreviewPage";
 import UserPortfolio from "./page/UserPortfolio";
 import UrlPortfolioPage from "./page/UrlPortfolioPage";
@@ -26,6 +27,14 @@ const App = () => (
             element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <ProfilePage />
               </ProtectedRoute>
             }
           />

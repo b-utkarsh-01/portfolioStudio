@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { getCurrentUserApi, loginApi, logoutApi, refreshSessionApi, registerApi } from "./authApi";
+import { getCurrentUserApi, loginApi, logoutApi, refreshSessionApi, registerApi, updateCurrentUserApi } from "./authApi";
 
 const AuthContext = createContext({
   currentUser: null,
@@ -7,6 +7,7 @@ const AuthContext = createContext({
   loading: true,
   login: async () => ({ ok: false }),
   register: async () => ({ ok: false }),
+  updateCurrentUser: async () => ({ ok: false }),
   logout: async () => {},
 });
 
@@ -64,6 +65,15 @@ export const AuthProvider = ({ children }) => {
           return { ok: true, user: result.user };
         } catch (error) {
           return { ok: false, error: error.message || "Registration failed." };
+        }
+      },
+      updateCurrentUser: async (payload) => {
+        try {
+          const result = await updateCurrentUserApi(payload);
+          setCurrentUser(result.user || null);
+          return { ok: true, user: result.user };
+        } catch (error) {
+          return { ok: false, error: error.message || "Profile update failed." };
         }
       },
       logout: async () => {

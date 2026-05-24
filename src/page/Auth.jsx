@@ -17,9 +17,7 @@ const Auth = () => {
   const [phone, setPhone] = useState("");
   const [titles, setTitles] = useState("");
   const [summary, setSummary] = useState("");
-  const [github, setGithub] = useState("");
-  const [githubHref, setGithubHref] = useState("");
-  const [badgeTitle, setBadgeTitle] = useState("");
+  const [links, setLinks] = useState([{ id: `link-${Date.now()}`, text: "", href: "" }]);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -66,6 +64,11 @@ const Auth = () => {
       return;
     }
 
+    const firstValidLink =
+      (Array.isArray(links) ? links : []).find(
+        (item) => `${item?.text || ""}`.trim() || `${item?.href || ""}`.trim()
+      ) || null;
+
     const payload = {
       username: username.trim(),
       password,
@@ -74,9 +77,14 @@ const Auth = () => {
       phone: phone.trim(),
       titles: titles.trim(),
       summary: summary.trim(),
-      github: github.trim(),
-      githubHref: githubHref.trim(),
-      badgeTitle: badgeTitle.trim(),
+      github: `${firstValidLink?.text || ""}`.trim(),
+      githubHref: `${firstValidLink?.href || ""}`.trim(),
+      links: (Array.isArray(links) ? links : [])
+        .map((item) => ({
+          text: `${item?.text || ""}`.trim(),
+          href: `${item?.href || ""}`.trim(),
+        }))
+        .filter((item) => item.text || item.href),
     };
 
     setSubmitting(true);
@@ -100,6 +108,32 @@ const Auth = () => {
   const handleCreateAccount = async () => {
     if (!isRegister || !isLastStage) return;
     await handleSubmit();
+  };
+
+  const addLinkItem = () => {
+    setLinks((prev) => [
+      ...(Array.isArray(prev) ? prev : []),
+      {
+        id: `link-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`,
+        text: "",
+        href: "",
+      },
+    ]);
+  };
+
+  const removeLinkItem = (id) => {
+    setLinks((prev) => {
+      const next = (Array.isArray(prev) ? prev : []).filter((item) => item.id !== id);
+      return next.length ? next : [{ id: `link-${Date.now()}`, text: "", href: "" }];
+    });
+  };
+
+  const updateLinkItem = (id, field, value) => {
+    setLinks((prev) =>
+      (Array.isArray(prev) ? prev : []).map((item) =>
+        item.id === id ? { ...item, [field]: value } : item
+      )
+    );
   };
 
   return (
@@ -170,9 +204,7 @@ const Auth = () => {
               displayName,
               titles,
               summary,
-              github,
-              githubHref,
-              badgeTitle,
+              links,
             }}
             handlers={{
               onUsernameChange: (event) => setUsername(event.target.value),
@@ -182,9 +214,9 @@ const Auth = () => {
               onDisplayNameChange: (event) => setDisplayName(event.target.value),
               onTitlesChange: (event) => setTitles(event.target.value),
               onSummaryChange: (event) => setSummary(event.target.value),
-              onGithubChange: (event) => setGithub(event.target.value),
-              onGithubHrefChange: (event) => setGithubHref(event.target.value),
-              onBadgeTitleChange: (event) => setBadgeTitle(event.target.value),
+              onLinkAdd: addLinkItem,
+              onLinkRemove: removeLinkItem,
+              onLinkChange: updateLinkItem,
             }}
           />
         </div>

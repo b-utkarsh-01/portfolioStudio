@@ -1,4 +1,5 @@
 import { inputClassName } from "../registerStages";
+import { Trash2 } from "lucide-react";
 
 const RegisterStageFields = ({ activeStage, values, handlers }) => {
   const {
@@ -9,9 +10,7 @@ const RegisterStageFields = ({ activeStage, values, handlers }) => {
     displayName,
     titles,
     summary,
-    github,
-    githubHref,
-    badgeTitle,
+    links,
   } = values;
   const {
     onUsernameChange,
@@ -21,9 +20,9 @@ const RegisterStageFields = ({ activeStage, values, handlers }) => {
     onDisplayNameChange,
     onTitlesChange,
     onSummaryChange,
-    onGithubChange,
-    onGithubHrefChange,
-    onBadgeTitleChange,
+    onLinkAdd,
+    onLinkRemove,
+    onLinkChange,
   } = handlers;
 
   if (activeStage === "account") {
@@ -76,20 +75,48 @@ const RegisterStageFields = ({ activeStage, values, handlers }) => {
   }
 
   return (
-    <>
-      <label className="block text-sm text-slate-200">
-        GitHub/Website Text (optional)
-        <input value={github} onChange={onGithubChange} placeholder="github.com/username or yoursite.com" className={inputClassName} />
-      </label>
-      <label className="block text-sm text-slate-200">
-        GitHub/Website Link (optional)
-        <input value={githubHref} onChange={onGithubHrefChange} placeholder="https://github.com/username" className={inputClassName} />
-      </label>
-      <label className="block text-sm text-slate-200">
-        Badge Title (optional)
-        <input value={badgeTitle} onChange={onBadgeTitleChange} placeholder="Portfolio Studio User" className={inputClassName} />
-      </label>
-    </>
+    <div className="rounded-xl border border-slate-700 bg-slate-900/40 p-3">
+      <div className="mb-3 flex items-center justify-between gap-2">
+        <div>
+          <h3 className="text-base font-semibold text-slate-100">Links (optional)</h3>
+          <p className="text-sm text-slate-400">Add GitHub, website, LinkedIn or any profile links.</p>
+        </div>
+        <button
+          type="button"
+          onClick={onLinkAdd}
+          className="rounded-lg border border-cyan-400 px-3 py-1.5 text-sm font-semibold text-cyan-300 hover:bg-cyan-500/10"
+        >
+          + Add Link
+        </button>
+      </div>
+
+      <div className="space-y-3">
+        {(Array.isArray(links) ? links : []).map((item) => (
+          <div key={item.id} className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)_auto]">
+            <input
+              value={item.text || ""}
+              onChange={(event) => onLinkChange(item.id, "text", event.target.value)}
+              placeholder="Display text (e.g., github.com/username)"
+              className={`${inputClassName} mt-0`}
+            />
+            <input
+              value={item.href || ""}
+              onChange={(event) => onLinkChange(item.id, "href", event.target.value)}
+              placeholder="Link (e.g., https://github.com/username)"
+              className={`${inputClassName} mt-0`}
+            />
+            <button
+              type="button"
+              onClick={() => onLinkRemove(item.id)}
+              className="inline-flex items-center justify-center rounded-lg border border-rose-500 px-3 py-2 text-rose-300 hover:bg-rose-500/10 hover:text-rose-200"
+              title="Remove Link"
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 };
 
