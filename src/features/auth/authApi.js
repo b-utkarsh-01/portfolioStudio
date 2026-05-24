@@ -23,3 +23,9 @@ export const logoutApi = () =>
   apiRequest("/auth/logout", {
     method: "POST",
   });
+
+export const updateCurrentUserApi = (payload) =>
+  apiRequest("/auth/me", {
+    method: "PUT",
+    body: JSON.stringify(payload),
+  });
