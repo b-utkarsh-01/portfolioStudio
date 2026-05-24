@@ -29,11 +29,11 @@ const RegisterStageFields = ({ activeStage, values, handlers }) => {
     return (
       <>
         <label className="block text-sm text-slate-200">
-          Username
+          Username <span className="text-orange-300">*</span>
           <input value={username} onChange={onUsernameChange} placeholder="yourname" autoComplete="username" className={inputClassName} />
         </label>
         <label className="block text-sm text-slate-200">
-          Password
+          Password <span className="text-orange-300">*</span>
           <input type="password" value={password} onChange={onPasswordChange} autoComplete="new-password" className={inputClassName} />
         </label>
       </>
@@ -59,7 +59,7 @@ const RegisterStageFields = ({ activeStage, values, handlers }) => {
     return (
       <>
         <label className="block text-sm text-slate-200">
-          Display Name
+          Display Name <span className="text-orange-300">*</span>
           <input value={displayName} onChange={onDisplayNameChange} placeholder="Your Name" autoComplete="name" className={inputClassName} />
         </label>
         <label className="block text-sm text-slate-200">
