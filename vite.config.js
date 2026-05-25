@@ -1,10 +1,15 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from "path"
+import fs from "fs"
 
 const localDefaultIndex = path.resolve(__dirname, "../default-templates/src/index.js");
 const localPremiumIndex = path.resolve(__dirname, "../premium-templates/src/index.js");
 const localRendererIndex = path.resolve(__dirname, "../template-renderer/src/index.jsx");
+const hasLocalTemplateRepos =
+  fs.existsSync(localDefaultIndex) &&
+  fs.existsSync(localPremiumIndex) &&
+  fs.existsSync(localRendererIndex);
 
 export default defineConfig({
   plugins: [react()],
@@ -61,9 +66,13 @@ export default defineConfig({
       postprocessing: path.resolve(__dirname, "./node_modules/postprocessing/build/index.js"),
       three: path.resolve(__dirname, "./node_modules/three/build/three.module.js"),
       "face-api.js": path.resolve(__dirname, "./node_modules/face-api.js/build/es6/index.js"),
-      "portfolio-studio-default": localDefaultIndex,
-      "portfolio-studio-premium": localPremiumIndex,
-      "portfolio-template-renderer": localRendererIndex,
+      ...(hasLocalTemplateRepos
+        ? {
+            "portfolio-studio-default": localDefaultIndex,
+            "portfolio-studio-premium": localPremiumIndex,
+            "portfolio-template-renderer": localRendererIndex,
+          }
+        : {}),
     },
   },
 })
