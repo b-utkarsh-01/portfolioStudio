@@ -22,7 +22,7 @@
     "motion": "^12.34.3",
     "ogl": "^1.0.11",
     "postprocessing": "^6.38.3",
-    "portfolio-template-renderer": "https://codeload.github.com/b-utkarsh-01/portfolioStudio-template-renderer/tar.gz/main",
+    "portfolio-template-renderer": "https://codeload.github.com/b-utkarsh-01/portfolioStudio-template-renderer/tar.gz/main?rev=6016d2e",
     "portfolio-studio-default": "https://codeload.github.com/b-utkarsh-01/portfolioStudio-default/tar.gz/main",
     "portfolio-studio-premium": "https://codeload.github.com/b-utkarsh-01/portfolioStudio-premium/tar.gz/main?rev=140032d",
     "react": "^19.2.0",
@@ -57,5 +57,6 @@
     }
   }
 }
+
 
 
