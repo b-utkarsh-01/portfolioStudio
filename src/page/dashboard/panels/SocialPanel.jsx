@@ -13,18 +13,11 @@ const SocialPanel = ({ form, onCollectionItemAdd, onCollectionItemRemove, onColl
   return (
     <div className="space-y-5">
       <section className="rounded-xl border border-slate-700 bg-slate-900/30 p-4">
-        <div className="mb-3 flex items-center justify-between gap-3">
+        <div className="mb-3">
           <div>
             <p className="text-sm font-semibold text-slate-100">Services</p>
             <p className="text-xs text-slate-400">Add each service as a separate card.</p>
           </div>
-          <button
-            type="button"
-            onClick={() => onCollectionItemAdd?.("serviceItems", emptyService)}
-            className="rounded-lg border border-cyan-400/60 px-3 py-2 text-xs font-semibold text-cyan-300 hover:bg-cyan-500/10"
-          >
-            + Add Service
-          </button>
         </div>
         <div className="space-y-3">
           {services.map((item) => (
@@ -58,21 +51,23 @@ const SocialPanel = ({ form, onCollectionItemAdd, onCollectionItemRemove, onColl
             </div>
           ))}
         </div>
+        <div className="mt-3">
+          <button
+            type="button"
+            onClick={() => onCollectionItemAdd?.("serviceItems", emptyService)}
+            className="w-full rounded-lg border border-cyan-400/60 px-3 py-2 text-xs font-semibold text-cyan-300 hover:bg-cyan-500/10"
+          >
+            + Add Service
+          </button>
+        </div>
       </section>
 
       <section className="rounded-xl border border-slate-700 bg-slate-900/30 p-4">
-        <div className="mb-3 flex items-center justify-between gap-3">
+        <div className="mb-3">
           <div>
             <p className="text-sm font-semibold text-slate-100">Testimonials</p>
             <p className="text-xs text-slate-400">Add feedback/testimonial cards with name, role and quote.</p>
           </div>
-          <button
-            type="button"
-            onClick={() => onCollectionItemAdd?.("testimonialItems", emptyTestimonial)}
-            className="rounded-lg border border-cyan-400/60 px-3 py-2 text-xs font-semibold text-cyan-300 hover:bg-cyan-500/10"
-          >
-            + Add Testimonial
-          </button>
         </div>
         <div className="space-y-3">
           {testimonials.map((item) => (
@@ -115,6 +110,15 @@ const SocialPanel = ({ form, onCollectionItemAdd, onCollectionItemRemove, onColl
               />
             </div>
           ))}
+        </div>
+        <div className="mt-3">
+          <button
+            type="button"
+            onClick={() => onCollectionItemAdd?.("testimonialItems", emptyTestimonial)}
+            className="w-full rounded-lg border border-cyan-400/60 px-3 py-2 text-xs font-semibold text-cyan-300 hover:bg-cyan-500/10"
+          >
+            + Add Testimonial
+          </button>
         </div>
       </section>
     </div>

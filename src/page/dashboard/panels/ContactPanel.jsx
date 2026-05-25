@@ -10,18 +10,11 @@ const ContactPanel = ({ form, onCollectionItemAdd, onCollectionItemRemove, onCol
 
   return (
     <section className="rounded-xl border border-slate-700 bg-slate-900/30 p-4">
-      <div className="mb-3 flex items-center justify-between gap-3">
+      <div className="mb-3">
         <div>
           <p className="text-sm font-semibold text-slate-100">Contact Links</p>
           <p className="text-xs text-slate-400">Add phone, email, github or any profile link as contact cards.</p>
         </div>
-        <button
-          type="button"
-          onClick={() => onCollectionItemAdd?.("contactItems", emptyContact)}
-          className="rounded-lg border border-cyan-400/60 px-3 py-2 text-xs font-semibold text-cyan-300 hover:bg-cyan-500/10"
-        >
-          + Add Contact
-        </button>
       </div>
 
       <div className="space-y-3">
@@ -68,6 +61,15 @@ const ContactPanel = ({ form, onCollectionItemAdd, onCollectionItemRemove, onCol
             </div>
           </div>
         ))}
+      </div>
+      <div className="mt-3">
+        <button
+          type="button"
+          onClick={() => onCollectionItemAdd?.("contactItems", emptyContact)}
+          className="w-full rounded-lg border border-cyan-400/60 px-3 py-2 text-xs font-semibold text-cyan-300 hover:bg-cyan-500/10"
+        >
+          + Add Contact
+        </button>
       </div>
     </section>
   );

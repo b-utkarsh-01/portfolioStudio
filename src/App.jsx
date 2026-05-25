@@ -32,6 +32,18 @@ const RouteSeo = () => {
 
     const descriptionTag = document.querySelector('meta[name="description"]');
     if (descriptionTag) descriptionTag.setAttribute("content", DEFAULT_DESCRIPTION);
+
+    const isTemplateRenderRoute =
+      path === "/templates/portfolio-v1" ||
+      path.startsWith("/u/") ||
+      path.startsWith("/portfolio/");
+
+    const targets = [document.documentElement, document.body];
+    if (isTemplateRenderRoute) {
+      targets.forEach((el) => el.classList.remove("app-scrollbar"));
+    } else {
+      targets.forEach((el) => el.classList.add("app-scrollbar"));
+    }
   }, [location.pathname]);
 
   return null;
