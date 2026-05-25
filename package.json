@@ -22,9 +22,9 @@
     "motion": "^12.34.3",
     "ogl": "^1.0.11",
     "postprocessing": "^6.38.3",
-    "portfolio-template-renderer": "https://codeload.github.com/b-utkarsh-01/portfolioStudio-template-renderer/tar.gz/main?rev=6016d2e",
-    "portfolio-studio-default": "https://codeload.github.com/b-utkarsh-01/portfolioStudio-default/tar.gz/main",
-    "portfolio-studio-premium": "https://codeload.github.com/b-utkarsh-01/portfolioStudio-premium/tar.gz/main?rev=140032d",
+    "portfolio-template-renderer": "https://codeload.github.com/b-utkarsh-01/portfolioStudio-template-renderer/tar.gz/main?rev=b7a5473",
+    "portfolio-studio-default": "https://codeload.github.com/b-utkarsh-01/portfolioStudio-default/tar.gz/main?rev=1fbe6c0",
+    "portfolio-studio-premium": "https://codeload.github.com/b-utkarsh-01/portfolioStudio-premium/tar.gz/main?rev=5d560d1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.13.1",
@@ -49,14 +49,12 @@
     "vite": "^7.3.1"
   },
   "overrides": {
-    "portfolio-studio-default": "https://codeload.github.com/b-utkarsh-01/portfolioStudio-default/tar.gz/main",
-    "portfolio-studio-premium": "https://codeload.github.com/b-utkarsh-01/portfolioStudio-premium/tar.gz/main?rev=140032d",
+    "portfolio-studio-default": "https://codeload.github.com/b-utkarsh-01/portfolioStudio-default/tar.gz/main?rev=1fbe6c0",
+    "portfolio-studio-premium": "https://codeload.github.com/b-utkarsh-01/portfolioStudio-premium/tar.gz/main?rev=5d560d1",
     "portfolio-template-renderer": {
-      "portfolio-studio-default": "https://codeload.github.com/b-utkarsh-01/portfolioStudio-default/tar.gz/main",
-      "portfolio-studio-premium": "https://codeload.github.com/b-utkarsh-01/portfolioStudio-premium/tar.gz/main?rev=140032d"
+      "portfolio-studio-default": "https://codeload.github.com/b-utkarsh-01/portfolioStudio-default/tar.gz/main?rev=1fbe6c0",
+      "portfolio-studio-premium": "https://codeload.github.com/b-utkarsh-01/portfolioStudio-premium/tar.gz/main?rev=5d560d1"
     }
   }
 }
-
-
 
