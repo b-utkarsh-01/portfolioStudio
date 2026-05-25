@@ -5,12 +5,8 @@ const fieldClass = "w-full rounded-lg border border-slate-700 bg-slate-950 px-3 
 
 const InlineListEditor = ({ title, addLabel, items, placeholder, onAdd, onChange, onRemove }) => (
   <div className="rounded-lg border border-slate-700 bg-slate-900/50 p-3">
-    <div className="mb-2 flex items-center justify-between gap-2">
+    <div className="mb-2">
       <p className="text-sm text-slate-200">{title}</p>
-      <button type="button" onClick={onAdd} className="inline-flex items-center gap-1 rounded-lg border border-cyan-500 px-2.5 py-1.5 text-xs font-semibold text-cyan-300 hover:bg-cyan-500/10">
-        <Plus className="h-3.5 w-3.5" />
-        {addLabel}
-      </button>
     </div>
     <div className="space-y-2">
       {items.map((item, index) => (
@@ -21,6 +17,12 @@ const InlineListEditor = ({ title, addLabel, items, placeholder, onAdd, onChange
           </button>
         </div>
       ))}
+    </div>
+    <div className="mt-3">
+      <button type="button" onClick={onAdd} className="inline-flex w-full items-center justify-center gap-1 rounded-lg border border-cyan-500 px-2.5 py-2 text-xs font-semibold text-cyan-300 hover:bg-cyan-500/10">
+        <Plus className="h-3.5 w-3.5" />
+        {addLabel}
+      </button>
     </div>
   </div>
 );
@@ -167,12 +169,8 @@ const PortfolioPanel = ({
           )
         ) : (
           <div className="rounded-lg border border-slate-700 bg-slate-900/50 p-3">
-            <div className="mb-2 flex items-center justify-between gap-2">
+            <div className="mb-2">
               <p className="text-sm text-slate-200">Contacts</p>
-              <button type="button" onClick={addContactItem} className="inline-flex items-center gap-1 rounded-lg border border-cyan-500 px-2.5 py-1.5 text-xs font-semibold text-cyan-300 hover:bg-cyan-500/10">
-                <Plus className="h-3.5 w-3.5" />
-                Add Contact
-              </button>
             </div>
             <div className="space-y-2">
               {(Array.isArray(draft?.profile?.contacts) ? draft.profile.contacts : []).map((contact, index) => (
@@ -185,6 +183,12 @@ const PortfolioPanel = ({
                   </button>
                 </div>
               ))}
+            </div>
+            <div className="mt-3">
+              <button type="button" onClick={addContactItem} className="inline-flex w-full items-center justify-center gap-1 rounded-lg border border-cyan-500 px-2.5 py-2 text-xs font-semibold text-cyan-300 hover:bg-cyan-500/10">
+                <Plus className="h-3.5 w-3.5" />
+                Add Contact
+              </button>
             </div>
           </div>
         )}
