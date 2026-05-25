@@ -23,7 +23,7 @@ const gitDeps = {
   "portfolio-studio-default":
     "https://codeload.github.com/b-utkarsh-01/portfolioStudio-default/tar.gz/main?rev=1fbe6c0",
   "portfolio-studio-premium":
-    "https://codeload.github.com/b-utkarsh-01/portfolioStudio-premium/tar.gz/main?rev=de21905",
+    "https://codeload.github.com/b-utkarsh-01/portfolioStudio-premium/tar.gz/main?rev=5d560d1",
 };
 
 const next = mode === "local" ? localDeps : gitDeps;
