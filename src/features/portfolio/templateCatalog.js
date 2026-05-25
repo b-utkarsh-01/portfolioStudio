@@ -80,8 +80,8 @@ const normalizeCatalog = (catalog) =>
 
 const loadRendererModule = async () => {
   if (!rendererModulePromise) {
-    rendererModulePromise = import("portfolio-template-renderer").catch((err) => {
-      console.error("[templateCatalog] Failed to load portfolio-template-renderer:", err);
+    rendererModulePromise = import("./templateRendererBridge").catch((err) => {
+      console.error("[templateCatalog] Failed to load templateRendererBridge:", err);
       throw err;
     });
   }
