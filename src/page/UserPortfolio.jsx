@@ -4,7 +4,7 @@ import { getTemplateById } from "../features/portfolio/templateCatalog";
 import { getPortfolioByUsernameApi } from "../features/portfolio/portfolioApi";
 import LoadingState from "../layout/LoadingState";
 
-const TemplatePortfolioRenderer = lazy(() => import("../features/portfolio/templateRendererBridge"));
+const TemplatePortfolioRenderer = lazy(() => import("portfolio-template-renderer"));
 const PassthroughFrame = ({ children }) => <>{children}</>;
 
 const UserPortfolio = ({ appReady, withTemplateLayout = false }) => {
@@ -43,7 +43,7 @@ const UserPortfolio = ({ appReady, withTemplateLayout = false }) => {
       const templateId = portfolio?.templateId || "default-v4";
       const [templateMeta, renderer] = await Promise.all([
         getTemplateById(templateId),
-        import("../features/portfolio/templateRendererBridge"),
+        import("portfolio-template-renderer"),
       ]);
       if (cancelled) return;
       setResolvedTemplateId(templateMeta?.id || "default-v4");

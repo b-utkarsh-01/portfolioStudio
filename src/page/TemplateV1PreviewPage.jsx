@@ -4,7 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import PreviewBackButton from "./PreviewBackButton";
 import LoadingState from "../layout/LoadingState";
 
-const TemplatePortfolioRenderer = lazy(() => import("../features/portfolio/templateRendererBridge"));
+const TemplatePortfolioRenderer = lazy(() => import("portfolio-template-renderer"));
 const PassthroughFrame = ({ children }) => <>{children}</>;
 
 const TemplateV1PreviewPage = () => {
@@ -16,7 +16,7 @@ const TemplateV1PreviewPage = () => {
   useEffect(() => {
     let cancelled = false;
     const loadRendererApi = async () => {
-      const renderer = await import("../features/portfolio/templateRendererBridge");
+      const renderer = await import("portfolio-template-renderer");
       if (cancelled) return;
       setResolvedTemplateId(renderer.getTemplateById(requestedTemplateId)?.id || "default-v4");
       setTemplatePreviewFrame(() => renderer.TemplatePreviewFrame || PassthroughFrame);
