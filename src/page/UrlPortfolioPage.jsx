@@ -4,7 +4,7 @@ import { Suspense, lazy, useEffect, useState } from "react";
 import PreviewBackButton from "./PreviewBackButton";
 import LoadingState from "../layout/LoadingState";
 
-const TemplatePortfolioRenderer = lazy(() => import("../features/portfolio/templateRendererBridge"));
+const TemplatePortfolioRenderer = lazy(() => import("portfolio-template-renderer"));
 const PassthroughFrame = ({ children }) => <>{children}</>;
 
 const UrlPortfolioPage = ({ appReady = true }) => {
@@ -19,7 +19,7 @@ const UrlPortfolioPage = ({ appReady = true }) => {
   useEffect(() => {
     let cancelled = false;
     const loadRendererApi = async () => {
-      const renderer = await import("../features/portfolio/templateRendererBridge");
+      const renderer = await import("portfolio-template-renderer");
       if (cancelled) return;
       const templateMeta = renderer.getTemplateById(requestedTemplateId);
       setResolvedTemplateId(templateMeta?.id || "default-v4");
