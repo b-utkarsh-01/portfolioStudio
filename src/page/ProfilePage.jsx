@@ -248,7 +248,7 @@ const ProfilePage = () => {
       <div className="grid min-h-0 flex-1 gap-4 lg:grid-cols-[260px_minmax(0,1fr)]">
         <ProfileStageSidebar activeStage={activeStage} setActiveStage={setActiveStage} />
 
-        <div className="min-h-0 overflow-y-auto pr-1">
+        <div className="frontend-scrollbar min-h-0 overflow-y-auto pr-1">
           {activeStage === "account" ? (
             <AccountPanel editing={editing} currentUser={currentUser} accountDraft={accountDraft} setAccountDraft={setAccountDraft} />
           ) : (
