@@ -122,7 +122,7 @@ const Dashboard = () => {
         <PublicPortfolioUrlCard publicPortfolioUrl={publicPortfolioUrl} onCopy={handleCopyPublicUrl} />
       ) : null}
 
-      <div className="frontend-scrollbar min-h-0 flex-1 overflow-y-auto pr-1">
+      <div className="min-h-0 flex-1 overflow-hidden">
         <DashboardForm
           form={form}
           onSubmit={handleSave}
