@@ -1,12 +1,13 @@
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../features/auth/AuthContext";
+import LoadingState from "../layout/LoadingState";
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
   const location = useLocation();
 
   if (loading) {
-    return <div className="mx-auto max-w-4xl py-20 text-center text-slate-300">Loading...</div>;
+    return <LoadingState title="Checking session..." subtitle="Verifying your sign-in status." compact />;
   }
 
   if (!isAuthenticated) {

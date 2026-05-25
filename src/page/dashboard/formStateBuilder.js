@@ -1,0 +1,86 @@
+import { createDefaultEditableData } from "../../features/portfolio/portfolioData";
+import {
+  additionalSkillsToGroups,
+  additionalSkillsToLines,
+  arrayToLines,
+  certificationsToItems,
+  contactsToItems,
+  educationToItems,
+  educationToLines,
+  experiencesToItems,
+  projectsToItems,
+  servicesToItems,
+  testimonialsToItems,
+  toCsv,
+} from "./formDataHelpers";
+
+export const buildFormState = (portfolioData, templateId = "premium-v1") => {
+  const base = portfolioData ?? createDefaultEditableData();
+  const fallbackLayoutStages = createDefaultEditableData().layout?.stages ?? [];
+  const baseCustomStages = Array.isArray(base?.customStages) ? base.customStages : [];
+  const profile = base?.profile ?? {};
+  const skills = base?.skills ?? {};
+  const contacts = Array.isArray(profile.contacts) ? profile.contacts : [];
+
+  return {
+    templateId,
+    name: profile.name ?? "",
+    titles: (profile.title ?? []).join("\n"),
+    summary: profile.summary ?? "",
+    avatar: profile.avatar ?? "",
+    highlights: toCsv(profile.highlights),
+    phone: contacts.find((item) => item.type === "phone")?.text ?? "",
+    phoneHref: contacts.find((item) => item.type === "phone")?.href ?? "",
+    email: contacts.find((item) => item.type === "email")?.text ?? "",
+    emailHref: contacts.find((item) => item.type === "email")?.href ?? "",
+    github: contacts.find((item) => item.type === "github")?.text ?? "",
+    githubHref: contacts.find((item) => item.type === "github")?.href ?? "",
+    skillsProgramming: toCsv(skills.programming),
+    skillsFrontend: toCsv(skills.frontend),
+    skillsBackend: toCsv(skills.backend),
+    skillsDatabases: toCsv(skills.databases),
+    skillsApi: toCsv(skills.api),
+    skillsCloud: toCsv(skills.cloud),
+    skillsAdditional: additionalSkillsToLines(skills),
+    skillsAdditionalGroups: additionalSkillsToGroups(skills),
+    education: educationToLines(base?.education),
+    experiences: arrayToLines(base?.experiences, ["title", "company", "period", "description"]),
+    projects: arrayToLines(base?.projects, ["name", "tech", "description", "link", "image"]),
+    educationItems: educationToItems(base?.education),
+    experienceItems: experiencesToItems(base?.experiences),
+    projectItems: projectsToItems(base?.projects),
+    services: arrayToLines(base?.services, ["name", "description"]),
+    testimonials: arrayToLines(base?.testimonials, ["name", "role", "quote"]),
+    certifications: arrayToLines(base?.certifications, ["name", "provider", "link"]),
+    contactItems: contactsToItems(profile.contacts),
+    serviceItems: servicesToItems(base?.services),
+    testimonialItems: testimonialsToItems(base?.testimonials),
+    certificationItems: certificationsToItems(base?.certifications),
+    layoutStages:
+      Array.isArray(base?.layout?.stages) && base.layout.stages.length
+        ? base.layout.stages.map((stage) => ({
+            id: `${stage?.id ?? ""}`,
+            title: `${stage?.title ?? ""}`,
+            enabled: stage?.enabled !== false,
+          }))
+        : fallbackLayoutStages.map((stage) => ({
+            id: `${stage?.id ?? ""}`,
+            title: `${stage?.title ?? ""}`,
+            enabled: stage?.enabled !== false,
+          })),
+    customStages: baseCustomStages.map((stage) => ({
+      id: `${stage?.id ?? ""}`,
+      kind: stage?.kind === "cards" ? "cards" : "paragraph",
+      paragraph: `${stage?.paragraph ?? ""}`,
+      cards: Array.isArray(stage?.cards)
+        ? stage.cards.map((item) => ({
+            title: `${item?.title ?? ""}`,
+            subtitle: `${item?.subtitle ?? ""}`,
+            description: `${item?.description ?? ""}`,
+            link: `${item?.link ?? ""}`,
+            image: `${item?.image ?? ""}`,
+          }))
+        : [],
+    })),
+  };
+};

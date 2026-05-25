@@ -29,9 +29,7 @@ const ProfilePanel = ({ form, onFieldChange }) => {
     <>
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Name"><input value={form.name} onChange={onFieldChange("name")} className={inputClassName} /></Field>
-        <Field label="Badge Name (For Nav Bar)"><input value={form.badgeName} onChange={onFieldChange("badgeName")} className={inputClassName} /></Field>
-        <Field label="Badge Logo"><input value={form.badgeLogo} onChange={onFieldChange("badgeLogo")} className={inputClassName} /></Field>
-        <Field label="Badge Title"><input value={form.badgeTitle} onChange={onFieldChange("badgeTitle")} className={inputClassName} /></Field>
+        <Field label="Avatar Image URL"><input value={form.avatar} onChange={onFieldChange("avatar")} className={inputClassName} placeholder="https://example.com/avatar.jpg" /></Field>
       </div>
 
       <section className="rounded-xl border border-slate-700 bg-slate-900/30 p-4">

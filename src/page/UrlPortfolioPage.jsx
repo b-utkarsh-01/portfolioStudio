@@ -1,20 +1,38 @@
 import { Navigate, useParams, useSearchParams } from "react-router-dom";
 import { decodePortfolioDataFromParam } from "../features/portfolio/urlPortfolio";
-import TemplatePortfolioRenderer, {
-  getTemplateById,
-  TemplatePreviewFrame,
-} from "portfolio-template-renderer";
+import { Suspense, lazy, useEffect, useState } from "react";
 import PreviewBackButton from "./PreviewBackButton";
+import LoadingState from "../layout/LoadingState";
+
+const TemplatePortfolioRenderer = lazy(() => import("portfolio-template-renderer"));
+const PassthroughFrame = ({ children }) => <>{children}</>;
 
 const UrlPortfolioPage = ({ appReady = true }) => {
   const { payload = "" } = useParams();
   const [searchParams] = useSearchParams();
+  const [resolvedTemplateId, setResolvedTemplateId] = useState("default-v4");
+  const [previewTier, setPreviewTier] = useState("neutral");
+  const [TemplatePreviewFrame, setTemplatePreviewFrame] = useState(() => PassthroughFrame);
   const encodedData = payload;
   const portfolioData = decodePortfolioDataFromParam(encodedData);
   const requestedTemplateId = searchParams.get("templateId") || "default-v4";
-  const templateMeta = getTemplateById(requestedTemplateId);
-  const templateId = templateMeta?.id || "default-v4";
-  const previewTheme = templateMeta?.tier === "premium" ? "premium" : "neutral";
+  useEffect(() => {
+    let cancelled = false;
+    const loadRendererApi = async () => {
+      const renderer = await import("portfolio-template-renderer");
+      if (cancelled) return;
+      const templateMeta = renderer.getTemplateById(requestedTemplateId);
+      setResolvedTemplateId(templateMeta?.id || "default-v4");
+      setPreviewTier(templateMeta?.tier === "premium" ? "premium" : "neutral");
+      setTemplatePreviewFrame(() => renderer.TemplatePreviewFrame || PassthroughFrame);
+    };
+    loadRendererApi();
+    return () => {
+      cancelled = true;
+    };
+  }, [requestedTemplateId]);
+
+  const previewTheme = previewTier;
   const fallbackPath = `/templates?tier=${encodeURIComponent(previewTheme)}`;
 
   if (!portfolioData) {
@@ -22,18 +40,20 @@ const UrlPortfolioPage = ({ appReady = true }) => {
   }
 
   const content = (
-    <TemplatePortfolioRenderer
-      appReady={appReady}
-      templateId={templateId}
-      portfolioData={portfolioData}
-    />
+    <Suspense fallback={<LoadingState title="Loading preview..." subtitle="Building shared portfolio preview." compact />}>
+      <TemplatePortfolioRenderer
+        appReady={appReady}
+        templateId={resolvedTemplateId}
+        portfolioData={portfolioData}
+      />
+    </Suspense>
   );
 
   if (previewTheme === "premium") {
     return (
       <>
         <PreviewBackButton fallbackPath={fallbackPath} />
-        <TemplatePreviewFrame templateId={templateId} portfolioData={portfolioData} showPreviewLabel={false}>
+        <TemplatePreviewFrame templateId={resolvedTemplateId} portfolioData={portfolioData} showPreviewLabel={false}>
           {content}
         </TemplatePreviewFrame>
       </>

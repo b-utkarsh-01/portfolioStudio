@@ -1,7 +1,7 @@
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../features/auth/AuthContext";
-import { TEMPLATE_CATALOG } from "../features/portfolio/templateCatalog";
-import { useMemo, useState } from "react";
+import { getTemplateCatalog } from "../features/portfolio/templateCatalog";
+import { useEffect, useMemo, useState } from "react";
 
 const TemplatesPage = () => {
   const { isAuthenticated } = useAuth();
@@ -10,7 +10,19 @@ const TemplatesPage = () => {
   const initialTier = searchParams.get("tier");
   const isValidTier = initialTier === "default" || initialTier === "premium" || initialTier === "ai";
   const [activeTier, setActiveTier] = useState(isValidTier ? initialTier : "default");
-  const [templates] = useState(TEMPLATE_CATALOG);
+  const [templates, setTemplates] = useState([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      const catalog = await getTemplateCatalog();
+      if (!cancelled) setTemplates(catalog);
+    };
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const handleTierChange = (tier) => {
     setActiveTier(tier);

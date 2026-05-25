@@ -28,6 +28,7 @@ const cloneCards = (value) =>
     subtitle: item?.subtitle ?? "",
     description: item?.description ?? "",
     link: item?.link ?? "",
+    image: item?.image ?? "",
   }));
 const cloneCustomStages = (value) =>
   cloneArray(value).map((stage) => ({
@@ -76,6 +77,7 @@ export const createDefaultEditableData = () => ({
       href: contact?.href ?? "",
       external: Boolean(contact?.external),
     })),
+    avatar: defaultProfile.avatar ?? "",
   },
   badgeName: {
     name: defaultBadgeName.name,
@@ -92,7 +94,7 @@ export const createDefaultEditableData = () => ({
   },
   education: cloneEducation(defaultEducation),
   experiences: cloneObjects(defaultExperiences, ["title", "company", "period", "description"]),
-  projects: cloneObjects(defaultProjects, ["name", "tech", "description", "link"]),
+  projects: cloneObjects(defaultProjects, ["name", "tech", "description", "link", "image"]),
   services: cloneObjects(defaultServices, ["name", "description"]),
   testimonials: cloneObjects(defaultTestimonials, ["name", "role", "quote"]),
   certifications: cloneObjects(defaultCertifications, ["name", "provider", "link"]),
@@ -166,6 +168,7 @@ export const hydrateRenderData = (rawData) => {
           external: Boolean(contact?.external),
         }))
         .filter((contact) => contact.type && contact.href && contact.text),
+      avatar: profile.avatar?.trim() || defaults.profile.avatar,
     },
     badgeName: {
       name: resolvedBadgeName,
@@ -175,7 +178,7 @@ export const hydrateRenderData = (rawData) => {
     skills: hydrateSkills(skills, defaults.skills),
     education: cloneEducation(data.education),
     experiences: cloneObjects(data.experiences, ["title", "company", "period", "description"]),
-    projects: cloneObjects(data.projects, ["name", "tech", "description", "link"]),
+    projects: cloneObjects(data.projects, ["name", "tech", "description", "link", "image"]),
     services: cloneObjects(data.services, ["name", "description"]),
     testimonials: cloneObjects(data.testimonials, ["name", "role", "quote"]),
     certifications: cloneObjects(data.certifications, ["name", "provider", "link"]),
@@ -195,7 +198,7 @@ export const hydrateRenderData = (rawData) => {
     renderData.experiences = cloneObjects(defaults.experiences, ["title", "company", "period", "description"]);
   }
   if (!renderData.projects.length) {
-    renderData.projects = cloneObjects(defaults.projects, ["name", "tech", "description", "link"]);
+    renderData.projects = cloneObjects(defaults.projects, ["name", "tech", "description", "link", "image"]);
   }
   if (!renderData.services.length) {
     renderData.services = cloneObjects(defaults.services, ["name", "description"]);

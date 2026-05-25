@@ -1,4 +1,5 @@
 import { Plus, Trash2, Sparkles, Phone, Mail, Link as LinkIcon } from "lucide-react";
+import LoadingState from "../../../layout/LoadingState";
 
 const fieldClass = "w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-slate-100 outline-none focus:border-orange-400";
 
@@ -53,7 +54,7 @@ const PortfolioPanel = ({
   removeContactItem,
 }) => {
   if (loading) {
-    return <div className={sectionCard + " text-slate-300"}>Loading portfolio data...</div>;
+    return <LoadingState title="Loading portfolio data..." subtitle="Syncing your editable profile information." compact />;
   }
 
   if (activeStage === "profile") {

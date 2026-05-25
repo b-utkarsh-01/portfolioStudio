@@ -1,14 +1,19 @@
-import { useEffect, useState } from "react";
+import { Suspense, lazy, useEffect, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
-import TemplatePortfolioRenderer, { TemplatePreviewFrame } from "portfolio-template-renderer";
 import { getTemplateById } from "../features/portfolio/templateCatalog";
 import { getPortfolioByUsernameApi } from "../features/portfolio/portfolioApi";
+import LoadingState from "../layout/LoadingState";
+
+const TemplatePortfolioRenderer = lazy(() => import("portfolio-template-renderer"));
+const PassthroughFrame = ({ children }) => <>{children}</>;
 
 const UserPortfolio = ({ appReady, withTemplateLayout = false }) => {
   const { username = "" } = useParams();
   const [portfolio, setPortfolio] = useState(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [resolvedTemplateId, setResolvedTemplateId] = useState("default-v4");
+  const [TemplatePreviewFrame, setTemplatePreviewFrame] = useState(() => PassthroughFrame);
 
   useEffect(() => {
     let cancelled = false;
@@ -32,25 +37,41 @@ const UserPortfolio = ({ appReady, withTemplateLayout = false }) => {
     };
   }, [username]);
 
+  useEffect(() => {
+    let cancelled = false;
+    const loadTemplateInfo = async () => {
+      const templateId = portfolio?.templateId || "default-v4";
+      const [templateMeta, renderer] = await Promise.all([
+        getTemplateById(templateId),
+        import("portfolio-template-renderer"),
+      ]);
+      if (cancelled) return;
+      setResolvedTemplateId(templateMeta?.id || "default-v4");
+      setTemplatePreviewFrame(() => renderer.TemplatePreviewFrame || PassthroughFrame);
+    };
+    loadTemplateInfo();
+    return () => {
+      cancelled = true;
+    };
+  }, [portfolio?.templateId]);
+
   if (loading) {
-    const loadingView = (
-      <div className="mx-auto max-w-4xl py-20 text-center text-slate-300">Loading...</div>
-    );
-    return loadingView;
+    return <LoadingState title="Loading portfolio..." subtitle="Fetching profile details and template settings." />;
   }
 
   if (notFound || !portfolio?.data) {
     return <Navigate to="/" replace />;
   }
 
-  const resolvedTemplateId = getTemplateById(portfolio?.templateId || "default-v4")?.id || "default-v4";
   const previewTheme = resolvedTemplateId.startsWith("premium-") ? "premium" : "neutral";
   const content = (
-    <TemplatePortfolioRenderer
-      appReady={appReady}
-      templateId={resolvedTemplateId}
-      portfolioData={portfolio.data}
-    />
+    <Suspense fallback={<LoadingState title="Loading portfolio view..." subtitle="Rendering your selected template." />}>
+      <TemplatePortfolioRenderer
+        appReady={appReady}
+        templateId={resolvedTemplateId}
+        portfolioData={portfolio.data}
+      />
+    </Suspense>
   );
 
   if (!withTemplateLayout) return content;
@@ -67,13 +88,7 @@ const UserPortfolio = ({ appReady, withTemplateLayout = false }) => {
     );
   }
 
-  return (
-    <>
-      {content}
-    </>
-  );
+  return <>{content}</>;
 };
 
 export default UserPortfolio;
-
-
