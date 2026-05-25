@@ -6,30 +6,62 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Scoped scrollbar styling (apply only where .app-scrollbar class is used) */
-.app-scrollbar {
+/* Scoped scrollbar styling (frontend routes only) */
+html.app-scrollbar,
+html.app-scrollbar body,
+html.app-scrollbar body * {
   scrollbar-width: thin;
   scrollbar-color: rgba(47, 78, 126, 0.55) rgba(15, 23, 42, 0.65);
 }
 
-.app-scrollbar::-webkit-scrollbar {
+html.app-scrollbar::-webkit-scrollbar,
+html.app-scrollbar body::-webkit-scrollbar,
+html.app-scrollbar body *::-webkit-scrollbar {
   width: 10px;
   height: 10px;
 }
 
-.app-scrollbar::-webkit-scrollbar-track {
+html.app-scrollbar::-webkit-scrollbar-track,
+html.app-scrollbar body::-webkit-scrollbar-track,
+html.app-scrollbar body *::-webkit-scrollbar-track {
   background: rgba(15, 23, 42, 0.65);
   border-radius: 999px;
 }
 
-.app-scrollbar::-webkit-scrollbar-thumb {
+html.app-scrollbar::-webkit-scrollbar-thumb,
+html.app-scrollbar body::-webkit-scrollbar-thumb,
+html.app-scrollbar body *::-webkit-scrollbar-thumb {
   background: linear-gradient(180deg, rgba(56, 189, 248, 0.75), rgba(16, 185, 129, 0.75));
   border-radius: 999px;
   border: 2px solid rgba(15, 23, 42, 0.9);
 }
 
-.app-scrollbar::-webkit-scrollbar-thumb:hover {
+html.app-scrollbar::-webkit-scrollbar-thumb:hover,
+html.app-scrollbar body::-webkit-scrollbar-thumb:hover,
+html.app-scrollbar body *::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(180deg, rgba(125, 211, 252, 0.9), rgba(52, 211, 153, 0.9));
+}
+
+/* Explicit frontend scroll areas (e.g. /templates list panel) */
+.frontend-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(56, 189, 248, 0.8) rgba(15, 23, 42, 0.78);
+}
+.frontend-scrollbar::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.frontend-scrollbar::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.78);
+  border-radius: 999px;
+}
+.frontend-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(56, 189, 248, 0.85), rgba(16, 185, 129, 0.85));
+  border-radius: 999px;
+  border: 2px solid rgba(15, 23, 42, 0.9);
+}
+.frontend-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(125, 211, 252, 0.95), rgba(52, 211, 153, 0.95));
 }
 
 @layer base {

@@ -129,7 +129,7 @@ const TemplatesPage = () => {
 
         <div className="hidden h-full min-h-[420px] rounded-full bg-slate-600/70 lg:block" />
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:overflow-y-auto lg:pr-2">
+        <div className="frontend-scrollbar grid gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:overflow-y-auto lg:pr-2">
           {showComingSoonBanner ? (
             <div className="sm:col-span-2 lg:col-span-3 rounded-2xl border border-slate-700 bg-slate-900/60 p-7 text-center min-h-[220px] flex flex-col items-center justify-center">
               <p className="text-xs uppercase tracking-[0.2em] text-orange-300">Coming Soon</p>
