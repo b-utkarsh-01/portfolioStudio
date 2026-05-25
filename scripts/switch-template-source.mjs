@@ -23,7 +23,7 @@ const gitDeps = {
   "portfolio-studio-default":
     "https://codeload.github.com/b-utkarsh-01/portfolioStudio-default/tar.gz/main",
   "portfolio-studio-premium":
-    "https://codeload.github.com/b-utkarsh-01/portfolioStudio-premium/tar.gz/main?rev=linuxfix-20260525",
+    "https://codeload.github.com/b-utkarsh-01/portfolioStudio-premium/tar.gz/main?rev=140032d",
 };
 
 const next = mode === "local" ? localDeps : gitDeps;
@@ -36,4 +36,5 @@ fs.writeFileSync(packageJsonPath, `${JSON.stringify(pkg, null, 2)}\n`, "utf8");
 
 console.log(`Switched template dependencies to: ${mode.toUpperCase()}`);
 console.log("Now run: npm install");
+
 
