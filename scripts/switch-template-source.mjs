@@ -19,11 +19,11 @@ const localDeps = {
 
 const gitDeps = {
   "portfolio-template-renderer":
-    "https://codeload.github.com/b-utkarsh-01/portfolioStudio-template-renderer/tar.gz/main?rev=162afc4",
+    "https://codeload.github.com/b-utkarsh-01/portfolioStudio-template-renderer/tar.gz/main?rev=082c9f1",
   "portfolio-studio-default":
     "https://codeload.github.com/b-utkarsh-01/portfolioStudio-default/tar.gz/main?rev=1f7a95d",
   "portfolio-studio-premium":
-    "https://codeload.github.com/b-utkarsh-01/portfolioStudio-premium/tar.gz/main?rev=bdba909",
+    "https://codeload.github.com/b-utkarsh-01/portfolioStudio-premium/tar.gz/main?rev=7206130",
 };
 
 const next = mode === "local" ? localDeps : gitDeps;
