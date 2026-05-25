@@ -14,12 +14,14 @@ const RegisterForm = ({
   onBack,
   onNext,
 }) => (
-  <div className="space-y-4 rounded-2xl border border-slate-700 bg-slate-950/30 p-4 sm:p-5">
+  <div className="flex h-full min-h-0 flex-col space-y-4 rounded-2xl border border-slate-700 bg-slate-950/30 p-4 sm:p-5">
     <p className="text-xs text-slate-400">
       Step {stageIndex + 1} of {totalStages}
     </p>
 
-    <RegisterStageFields activeStage={activeStage} values={values} handlers={handlers} />
+    <div className="min-h-0 flex-1 overflow-y-auto pr-1">
+      <RegisterStageFields activeStage={activeStage} values={values} handlers={handlers} />
+    </div>
 
     {error ? <p className="text-sm text-rose-300">{error}</p> : null}
 
