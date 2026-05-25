@@ -13,18 +13,11 @@ const SkillsPanel = ({
 }) => (
   <>
     <section className="rounded-xl border border-slate-700 bg-slate-900/30 p-4">
-      <div className="mb-3 flex items-center justify-between gap-3">
+      <div className="mb-3">
         <div>
           <p className="text-sm font-semibold text-slate-100">Add Skills</p>
           <p className="text-xs text-slate-400">Create skill sections like DevOps, Data Science, Security, and add skills inside each one.</p>
         </div>
-        <button
-          type="button"
-          onClick={onSkillGroupAdd}
-          className="rounded-lg border border-cyan-400/60 px-3 py-2 text-xs font-semibold text-cyan-300 hover:bg-cyan-500/10"
-        >
-          + Add Section
-        </button>
       </div>
 
       <div className="space-y-3">
@@ -67,16 +60,26 @@ const SkillsPanel = ({
                 </div>
               ))}
             </div>
-
+            <div className=" flex justify-center">
             <button
               type="button"
               onClick={() => onSkillAdd?.(group.id)}
-              className="mt-3 rounded-lg border border-slate-500 px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-slate-800"
+              className="mt-3 rounded-lg border border-slate-500 px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-slate-800 w-[70%] "
             >
               + Add Skills
             </button>
+            </div>
           </div>
         ))}
+      </div>
+      <div className="mt-3">
+        <button
+          type="button"
+          onClick={onSkillGroupAdd}
+          className="w-full rounded-lg border border-cyan-400/60 px-3 py-2 text-xs font-semibold text-cyan-300 hover:bg-cyan-500/10"
+        >
+          + Add Section
+        </button>
       </div>
     </section>
   </>

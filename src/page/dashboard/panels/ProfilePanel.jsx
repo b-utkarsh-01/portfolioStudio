@@ -33,18 +33,11 @@ const ProfilePanel = ({ form, onFieldChange }) => {
       </div>
 
       <section className="rounded-xl border border-slate-700 bg-slate-900/30 p-4">
-        <div className="mb-3 flex items-center justify-between gap-3">
+        <div className="mb-3">
           <div>
             <p className="text-sm font-semibold text-slate-100">Titles</p>
             <p className="text-xs text-slate-400">Add role titles one by one.</p>
           </div>
-          <button
-            type="button"
-            onClick={addTitle}
-            className="rounded-lg border border-cyan-400/60 px-3 py-2 text-xs font-semibold text-cyan-300 hover:bg-cyan-500/10"
-          >
-            + Add Title
-          </button>
         </div>
         <div className="space-y-3">
           {(titles.length ? titles : [""]).map((title, index) => (
@@ -66,6 +59,15 @@ const ProfilePanel = ({ form, onFieldChange }) => {
               </button>
             </div>
           ))}
+        </div>
+        <div className="mt-3">
+          <button
+            type="button"
+            onClick={addTitle}
+            className="w-full rounded-lg border border-cyan-400/60 px-3 py-2 text-xs font-semibold text-cyan-300 hover:bg-cyan-500/10"
+          >
+            + Add Title
+          </button>
         </div>
       </section>
 

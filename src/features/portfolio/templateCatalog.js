@@ -16,8 +16,8 @@ const FALLBACK_TEMPLATE_CATALOG = [
   {
     id: "default-nova",
     tier: "default",
-    name: "Aurora",
-    description: "Editorial dark layout with aurora-style accents.",
+    name: "Chronicle",
+    description: "Editorial dark layout with lookbook typography and bronze accents.",
   },
   {
     id: "default-v4",
