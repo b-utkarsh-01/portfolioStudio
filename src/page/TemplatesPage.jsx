@@ -87,6 +87,7 @@ const TemplatesPage = () => {
 
   return (
     <section className="space-y-6 lg:h-[calc(100vh-170px)] lg:overflow-hidden">
+      <p className="text-right text-xs text-slate-400">Build marker: 5b2dcd6</p>
       <h1 className="text-center text-3xl font-semibold text-slate-100 sm:text-5xl">
         Get Your First Impression
       </h1>
