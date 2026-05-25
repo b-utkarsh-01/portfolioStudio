@@ -76,18 +76,11 @@ const RegisterStageFields = ({ activeStage, values, handlers }) => {
 
   return (
     <div className="rounded-xl border border-slate-700 bg-slate-900/40 p-3">
-      <div className="mb-3 flex items-center justify-between gap-2">
+      <div className="mb-3">
         <div>
           <h3 className="text-base font-semibold text-slate-100">Links (optional)</h3>
           <p className="text-sm text-slate-400">Add GitHub, website, LinkedIn or any profile links.</p>
         </div>
-        <button
-          type="button"
-          onClick={onLinkAdd}
-          className="rounded-lg border border-cyan-400 px-3 py-1.5 text-sm font-semibold text-cyan-300 hover:bg-cyan-500/10"
-        >
-          + Add Link
-        </button>
       </div>
 
       <div className="space-y-3">
@@ -115,6 +108,16 @@ const RegisterStageFields = ({ activeStage, values, handlers }) => {
             </button>
           </div>
         ))}
+      </div>
+
+      <div className="mt-3">
+        <button
+          type="button"
+          onClick={onLinkAdd}
+          className="inline-flex w-full items-center justify-center rounded-lg border border-cyan-400 px-3 py-2 text-sm font-semibold text-cyan-300 hover:bg-cyan-500/10"
+        >
+          + Add Link
+        </button>
       </div>
     </div>
   );

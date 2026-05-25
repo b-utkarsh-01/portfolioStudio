@@ -148,7 +148,9 @@ const Auth = () => {
   return (
     <div
       className={`mx-auto w-full rounded-3xl border border-slate-700 bg-slate-900/70 p-6 transition-all duration-300 ease-out sm:p-8 ${
-        mode === "register" ? "max-w-5xl" : "max-w-md"
+        mode === "register"
+          ? "flex h-[calc(100dvh-170px)] min-h-0 max-w-5xl flex-col overflow-hidden"
+          : "max-w-md"
       }`}
     >
       <h1 className="text-2xl font-semibold text-slate-100">Portfolio Builder</h1>
@@ -181,7 +183,7 @@ const Auth = () => {
           onSubmit={handleSubmit}
         />
       ) : (
-        <div className="mt-5 grid gap-4 transition-opacity duration-300 ease-out lg:grid-cols-[150px_minmax(0,1fr)] xl:grid-cols-[170px_minmax(0,1fr)]">
+        <div className="mt-5 grid min-h-0 flex-1 gap-4 transition-opacity duration-300 ease-out lg:grid-cols-[150px_minmax(0,1fr)] xl:grid-cols-[170px_minmax(0,1fr)]">
           <RegisterStageSidebar
             stages={REGISTER_STAGES}
             stageIndex={stageIndex}
