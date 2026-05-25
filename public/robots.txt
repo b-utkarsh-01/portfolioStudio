@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /auth
+Disallow: /dashboard
+Disallow: /profile
+
+Sitemap: https://portfolio-studio-frontend.vercel.app/sitemap.xml

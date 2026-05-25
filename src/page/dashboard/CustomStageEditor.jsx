@@ -11,7 +11,7 @@ const CustomStageEditor = ({ activeStageKey, activeCustomStage, onCustomStageCha
   const addCard = () => {
     const cards = Array.isArray(activeCustomStage?.cards) ? activeCustomStage.cards : [];
     onCustomStageChange?.(activeStageKey, {
-      cards: [...cards, { title: "", subtitle: "", description: "", link: "" }],
+      cards: [...cards, { title: "", subtitle: "", description: "", link: "", image: "" }],
     });
   };
 
@@ -104,6 +104,14 @@ const CustomStageEditor = ({ activeStageKey, activeCustomStage, onCustomStageCha
                   value={card?.link || ""}
                   onChange={(event) => updateCardField(index, "link", event.target.value)}
                   placeholder="https://example.com"
+                  className={inputClassName}
+                />
+              </Field>
+              <Field label="Image URL (optional)">
+                <input
+                  value={card?.image || ""}
+                  onChange={(event) => updateCardField(index, "image", event.target.value)}
+                  placeholder="https://example.com/image.jpg"
                   className={inputClassName}
                 />
               </Field>

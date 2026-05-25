@@ -186,6 +186,12 @@ const WorkPanel = ({
                 placeholder="Project Link (optional)"
                 className={`${inputClassName} mt-2`}
               />
+              <input
+                value={item.image || ""}
+                onChange={(event) => onWorkItemChange?.("projectItems", item.id, "image", event.target.value)}
+                placeholder="Project Image URL (optional)"
+                className={`${inputClassName} mt-2`}
+              />
             </div>
           ))}
         </div>

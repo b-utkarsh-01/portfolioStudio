@@ -1,80 +1,44 @@
 import { getPreviewDataForTemplateId } from "../features/portfolio/templatePreviewData";
-import { getMyPortfolioApi } from "../features/portfolio/portfolioApi";
-import { useAuth } from "../features/auth/AuthContext";
-import { useEffect, useState } from "react";
+import { Suspense, lazy, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import TemplatePortfolioRenderer, {
-  getTemplateById,
-  TemplatePreviewFrame,
-} from "portfolio-template-renderer";
 import PreviewBackButton from "./PreviewBackButton";
+import LoadingState from "../layout/LoadingState";
+
+const TemplatePortfolioRenderer = lazy(() => import("portfolio-template-renderer"));
+const PassthroughFrame = ({ children }) => <>{children}</>;
 
 const TemplateV1PreviewPage = () => {
-  const { isAuthenticated } = useAuth();
   const [searchParams] = useSearchParams();
-  const [userPortfolioData, setUserPortfolioData] = useState(null);
-  const [isLoadingPortfolio, setIsLoadingPortfolio] = useState(isAuthenticated);
+  const [TemplatePreviewFrame, setTemplatePreviewFrame] = useState(() => PassthroughFrame);
+  const [resolvedTemplateId, setResolvedTemplateId] = useState("default-v4");
   const requestedTemplateId = searchParams.get("templateId") || "default-v4";
-  const resolvedTemplateId = getTemplateById(requestedTemplateId)?.id || "default-v4";
 
   useEffect(() => {
     let cancelled = false;
-
-    if (!isAuthenticated) {
-      setUserPortfolioData(null);
-      setIsLoadingPortfolio(false);
-      return () => {
-        cancelled = true;
-      };
-    }
-
-    const loadPortfolio = async () => {
-      setIsLoadingPortfolio(true);
-      try {
-        const payload = await getMyPortfolioApi();
-        if (!cancelled) {
-          setUserPortfolioData(payload?.portfolio?.data ?? null);
-        }
-      } catch {
-        if (!cancelled) {
-          setUserPortfolioData(null);
-        }
-      } finally {
-        if (!cancelled) {
-          setIsLoadingPortfolio(false);
-        }
-      }
+    const loadRendererApi = async () => {
+      const renderer = await import("portfolio-template-renderer");
+      if (cancelled) return;
+      setResolvedTemplateId(renderer.getTemplateById(requestedTemplateId)?.id || "default-v4");
+      setTemplatePreviewFrame(() => renderer.TemplatePreviewFrame || PassthroughFrame);
     };
-
-    loadPortfolio();
-
+    loadRendererApi();
     return () => {
       cancelled = true;
     };
-  }, [isAuthenticated]);
+  }, [requestedTemplateId]);
 
-  const portfolioData =
-    isAuthenticated && userPortfolioData
-      ? userPortfolioData
-      : getPreviewDataForTemplateId(resolvedTemplateId);
-  const templateMeta = getTemplateById(resolvedTemplateId);
-  const previewTheme = templateMeta?.tier === "premium" ? "premium" : "neutral";
+  const portfolioData = getPreviewDataForTemplateId(resolvedTemplateId);
+  const previewTheme = resolvedTemplateId.startsWith("premium-") ? "premium" : "neutral";
   const fallbackPath = `/templates?tier=${encodeURIComponent(previewTheme)}`;
 
-  if (isAuthenticated && isLoadingPortfolio) {
-    return (
-      <div className="mx-auto max-w-4xl py-20 text-center text-slate-300">
-        Loading your portfolio data...
-      </div>
-    );
-  }
-
   const content = (
-    <TemplatePortfolioRenderer
-      appReady
-      templateId={resolvedTemplateId}
-      portfolioData={portfolioData}
-    />
+    <Suspense fallback={<LoadingState title="Loading preview..." subtitle="Preparing the live template preview." compact />}>
+      <TemplatePortfolioRenderer
+        appReady
+        templateId={resolvedTemplateId}
+        portfolioData={portfolioData}
+      />
+    </Suspense>
   );
 
   if (previewTheme === "premium") {
@@ -101,5 +65,3 @@ const TemplateV1PreviewPage = () => {
 };
 
 export default TemplateV1PreviewPage;
-
-

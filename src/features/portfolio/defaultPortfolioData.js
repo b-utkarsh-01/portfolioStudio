@@ -16,6 +16,7 @@ export const defaultPortfolioData = {
     summary: "",
     highlights: [],
     contacts: [],
+    avatar: "",
   },
   badgeName: {
     name: "",
