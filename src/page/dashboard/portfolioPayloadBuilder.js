@@ -22,6 +22,12 @@ const getInitials2 = (name) =>
     .join("");
 
 export const buildPortfolioData = (form) => {
+  const layoutStageTitleById = new Map(
+    (Array.isArray(form.layoutStages) ? form.layoutStages : []).map((stage) => [
+      `${stage?.id ?? ""}`.trim(),
+      `${stage?.title ?? ""}`.trim(),
+    ])
+  );
   const additionalSkillGroupsFromCards = (Array.isArray(form.skillsAdditionalGroups) ? form.skillsAdditionalGroups : []).reduce(
     (acc, group) => {
       const key = `${group?.name ?? ""}`.trim();
@@ -163,6 +169,10 @@ export const buildPortfolioData = (form) => {
     },
     customStages: (Array.isArray(form.customStages) ? form.customStages : []).map((stage) => ({
       id: `${stage?.id ?? ""}`,
+      title:
+        `${layoutStageTitleById.get(`${stage?.id ?? ""}`.trim()) || ""}`.trim() ||
+        `${stage?.title ?? ""}`.trim() ||
+        "Custom Stage",
       kind: stage?.kind === "cards" ? "cards" : "paragraph",
       paragraph: `${stage?.paragraph ?? ""}`.trim(),
       cards: (Array.isArray(stage?.cards) ? stage.cards : [])
