@@ -36,3 +36,4 @@ fs.writeFileSync(packageJsonPath, `${JSON.stringify(pkg, null, 2)}\n`, "utf8");
 
 console.log(`Switched template dependencies to: ${mode.toUpperCase()}`);
 console.log("Now run: npm install");
+
