@@ -64,7 +64,7 @@ const DashboardForm = ({
   };
 
   return (
-    <div className="grid h-full min-h-0 gap-4 lg:grid-cols-[220px_minmax(0,1fr)]">
+    <div className="grid h-full min-h-0 gap-4 overflow-hidden lg:grid-cols-[220px_minmax(0,1fr)]">
       <StageSidebar
         stages={stages}
         stageIndex={stageIndex}
@@ -74,7 +74,7 @@ const DashboardForm = ({
         onResetDefaults={onResetDefaults}
       />
 
-      <section className="frontend-scrollbar h-full min-h-0 overflow-y-auto pr-1 space-y-5 rounded-2xl border border-slate-700 bg-slate-900/50 p-4 sm:p-5">
+      <section className="frontend-scrollbar h-full min-h-0 min-w-0 overflow-y-auto pr-1 space-y-5 rounded-2xl border border-slate-700 bg-slate-900/50 p-4 sm:p-5">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div className="w-full sm:max-w-lg">
             <label className="block text-sm text-slate-200">
