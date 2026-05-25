@@ -19,7 +19,7 @@ const RegisterForm = ({
       Step {stageIndex + 1} of {totalStages}
     </p>
 
-    <div className="min-h-0 flex-1 overflow-y-auto pr-1">
+    <div className="frontend-scrollbar min-h-0 flex-1 overflow-y-auto pr-1">
       <RegisterStageFields activeStage={activeStage} values={values} handlers={handlers} />
     </div>
 
