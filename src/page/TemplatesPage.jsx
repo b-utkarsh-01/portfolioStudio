@@ -2,6 +2,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../features/auth/AuthContext";
 import { getTemplateCatalog } from "../features/portfolio/templateCatalog";
 import { useEffect, useMemo, useState } from "react";
+import AiStudioPanel from "../features/ai/AiStudioPanel";
 
 const TemplatesPage = () => {
   const { isAuthenticated } = useAuth();
@@ -11,6 +12,7 @@ const TemplatesPage = () => {
   const isValidTier = initialTier === "default" || initialTier === "premium" || initialTier === "ai";
   const [activeTier, setActiveTier] = useState(isValidTier ? initialTier : "default");
   const [templates, setTemplates] = useState([]);
+  const isAiTier = activeTier === "ai";
 
   useEffect(() => {
     let cancelled = false;
@@ -40,16 +42,9 @@ const TemplatesPage = () => {
       ),
     [activeTier, templates]
   );
-  const showComingSoonBanner = activeTier === "ai" || visibleTemplates.length === 0;
+  const showComingSoonBanner = activeTier !== "ai" && visibleTemplates.length === 0;
 
   const comingSoonContent = useMemo(() => {
-    if (activeTier === "ai") {
-      return {
-        title: "AI Portfolio Builder",
-        description: "One-click AI-generated portfolios are in progress.",
-      };
-    }
-
     if (activeTier === "default") {
       return {
         title: "Default Templates",
@@ -86,19 +81,24 @@ const TemplatesPage = () => {
   };
 
   return (
-    <section className="space-y-6 lg:h-[calc(100vh-170px)] lg:overflow-hidden">
-      <h1 className="text-center text-3xl font-semibold text-slate-100 sm:text-5xl">
+    <section
+      className={[
+        "flex flex-col",
+        isAiTier ? "lg:h-[calc(100dvh-156px)] lg:overflow-hidden" : "lg:h-[calc(100dvh-150px)] lg:overflow-hidden",
+      ].join(" ")}
+    >
+      <h1 className="mb-6 text-center text-3xl font-semibold text-slate-100 sm:text-5xl">
         Get Your First Impression
       </h1>
 
-      <div className="grid gap-5 pb-[10px] lg:h-[calc(100%-88px)] lg:grid-cols-[160px_1px_minmax(0,1fr)] lg:overflow-hidden">
+      <div
+        className={[
+          "min-h-0 flex-1 grid gap-5 lg:grid-cols-[160px_1px_minmax(0,1fr)] lg:overflow-hidden",
+        ].join(" ")}
+      >
         <aside className="px-1 py-2 flex lg:sticky lg:top-0 lg:h-full lg:items-center">
           <div className="flex flex-col justify-center gap-2">
-            <button
-              type="button"
-              onClick={() => handleTierChange("ai")}
-              className={modeButtonClass("ai")}
-            >
+            <button type="button" onClick={() => handleTierChange("ai")} className={modeButtonClass("ai")}>
               {activeTier === "ai" ? (
                 <span className="absolute left-0 top-1/2 h-7 w-1 -translate-y-1/2 rounded-r bg-cyan-300" />
               ) : null}
@@ -129,7 +129,30 @@ const TemplatesPage = () => {
 
         <div className="hidden h-full min-h-[420px] rounded-full bg-slate-600/70 lg:block" />
 
-        <div className="frontend-scrollbar grid gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:overflow-y-auto lg:pr-2">
+        <div
+          className={[
+            "frontend-scrollbar grid gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:pr-2",
+            activeTier === "ai" ? "lg:h-full lg:overflow-hidden" : "lg:overflow-y-auto",
+          ].join(" ")}
+        >
+          {activeTier === "ai" ? (
+            <div className="sm:col-span-2 lg:col-span-3">
+              {isAuthenticated ? (
+                <AiStudioPanel applyRedirectPath="/dashboard" />
+              ) : (
+                <div className="rounded-2xl border border-slate-700 bg-slate-900/60 p-6 text-center">
+                  <p className="text-sm text-slate-300">AI portfolio generate karne ke liye login required hai.</p>
+                  <button
+                    type="button"
+                    onClick={() => navigate("/auth", { state: { from: { pathname: "/templates", search: "?tier=ai" } } })}
+                    className="mt-3 rounded-md bg-cyan-600 px-3 py-2 text-sm font-semibold text-white hover:bg-cyan-500"
+                  >
+                    Login To Continue
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : null}
           {showComingSoonBanner ? (
             <div className="sm:col-span-2 lg:col-span-3 rounded-2xl border border-slate-700 bg-slate-900/60 p-7 text-center min-h-[220px] flex flex-col items-center justify-center">
               <p className="text-xs uppercase tracking-[0.2em] text-orange-300">Coming Soon</p>
@@ -141,7 +164,7 @@ const TemplatesPage = () => {
               </p>
             </div>
           ) : null}
-          {!showComingSoonBanner && visibleTemplates.map((template, index) => (
+          {!showComingSoonBanner && activeTier !== "ai" && visibleTemplates.map((template, index) => (
             <article key={template.id} className="rounded-2xl border border-slate-800 bg-slate-900/40 p-5">
               <p className="text-xs uppercase tracking-wide text-orange-300">
                 Template {`${index + 1}`.padStart(2, "0")} | {template.tier}

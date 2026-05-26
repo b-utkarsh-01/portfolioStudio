@@ -2,7 +2,7 @@ import { Plus, Trash2 } from "lucide-react";
 
 const StageSidebar = ({ stages, stageIndex, setStageIndex, onStageToggle, onAddStage, onResetDefaults }) => {
   return (
-    <aside className="flex h-full min-h-0 min-w-0 flex-col rounded-2xl border border-slate-700 bg-slate-950/40 p-3">
+    <aside className="flex min-h-0 min-w-0 flex-col rounded-2xl border border-slate-700 bg-slate-950/40 p-3 lg:h-full">
       <div className="mb-2 flex items-center justify-between gap-2 px-2">
         <p className="text-xs uppercase tracking-wide text-slate-400">Stages</p>
         <button

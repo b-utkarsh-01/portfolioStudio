@@ -1,4 +1,4 @@
-﻿import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import Field from "./Field";
 import StageSidebar from "./StageSidebar";
@@ -30,6 +30,12 @@ const DashboardForm = ({
   urlDataPortfolioPath,
   savedAt,
   statusDetails = [],
+  onPublish,
+  onUnpublish,
+  publishing = false,
+  unpublishing = false,
+  publishStatus = null,
+  initialStageKey = "",
 }) => {
   const [stageIndex, setStageIndex] = useState(0);
 
@@ -59,12 +65,18 @@ const DashboardForm = ({
   const ActivePanel = StagePanels[activeStageKey];
   const isCustomStage = !ActivePanel && stageIndex >= DEFAULT_STAGES.length;
 
+  useEffect(() => {
+    if (!initialStageKey) return;
+    const nextIndex = stages.findIndex((stage) => `${stage?.key || ""}` === `${initialStageKey}`);
+    if (nextIndex >= 0) setStageIndex(nextIndex);
+  }, [initialStageKey, stages]);
+
   const handleSaveClick = () => {
     onSubmit?.();
   };
 
   return (
-    <div className="grid h-full min-h-0 gap-4 overflow-hidden lg:grid-cols-[220px_minmax(0,1fr)]">
+    <div className="grid min-h-0 gap-4 lg:h-full lg:overflow-hidden lg:grid-cols-[220px_minmax(0,1fr)]">
       <StageSidebar
         stages={stages}
         stageIndex={stageIndex}
@@ -74,7 +86,7 @@ const DashboardForm = ({
         onResetDefaults={onResetDefaults}
       />
 
-      <section className="frontend-scrollbar h-full min-h-0 min-w-0 overflow-y-auto pr-1 space-y-5 rounded-2xl border border-slate-700 bg-slate-900/50 p-4 sm:p-5">
+      <section className="frontend-scrollbar min-h-0 min-w-0 space-y-5 rounded-2xl border border-slate-700 bg-slate-900/50 p-4 pr-1 sm:p-5 lg:h-full lg:overflow-y-auto">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div className="w-full sm:max-w-lg">
             <label className="block text-sm text-slate-200">
@@ -111,6 +123,11 @@ const DashboardForm = ({
             onCollectionItemAdd={onCollectionItemAdd}
             onCollectionItemRemove={onCollectionItemRemove}
             onCollectionItemChange={onCollectionItemChange}
+            onPublish={onPublish}
+            onUnpublish={onUnpublish}
+            publishing={publishing}
+            unpublishing={unpublishing}
+            publishStatus={publishStatus}
           />
         ) : null}
 
@@ -182,3 +199,4 @@ const DashboardForm = ({
 };
 
 export default DashboardForm;
+

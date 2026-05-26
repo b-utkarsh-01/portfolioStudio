@@ -5,6 +5,7 @@ import {
   PortfolioDataProvider,
   TemplateV1Layout,
 } from "portfolio-studio-premium";
+import AiDynamicTemplateRenderer from "./aiDynamic/AiDynamicTemplateRenderer";
 
 export const TEMPLATE_CATALOG = [
   ...(Array.isArray(defaultTemplates) ? defaultTemplates : []),
@@ -34,6 +35,20 @@ export const TemplatePreviewFrame = ({
 };
 
 const TemplatePortfolioRenderer = ({ appReady, templateId = "default-horizon", portfolioData = null }) => {
+  const renderMode = `${portfolioData?.renderMode || "static"}`.toLowerCase();
+  const aiTemplateSpec = portfolioData?.aiTemplateSpec || null;
+  const normalizedTemplateId = `${templateId || ""}`.toLowerCase();
+  const isAiTemplate = normalizedTemplateId.startsWith("ai-");
+  const isDynamic =
+    aiTemplateSpec &&
+    typeof aiTemplateSpec === "object" &&
+    isAiTemplate &&
+    renderMode === "dynamic";
+
+  if (isDynamic) {
+    return <AiDynamicTemplateRenderer spec={aiTemplateSpec} portfolioData={portfolioData || {}} />;
+  }
+
   const safeTemplateId = getTemplateById(templateId)?.id || "default-horizon";
   const isDefaultTemplate = `${safeTemplateId}`.startsWith("default-");
 
