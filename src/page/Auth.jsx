@@ -149,7 +149,7 @@ const Auth = () => {
     <div
       className={`mx-auto w-full rounded-3xl border border-slate-700 bg-slate-900/70 p-6 transition-all duration-300 ease-out sm:p-8 ${
         mode === "register"
-          ? "flex h-[calc(100dvh-170px)] min-h-0 max-w-5xl flex-col overflow-hidden"
+          ? "flex max-w-5xl flex-col overflow-y-auto lg:h-[calc(100dvh-170px)] lg:min-h-0 lg:overflow-hidden"
           : "max-w-md"
       }`}
     >

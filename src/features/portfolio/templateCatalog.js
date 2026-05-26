@@ -1,3 +1,5 @@
+import { API_BASE_URL } from "../api/config";
+
 let rendererModulePromise;
 
 const FALLBACK_TEMPLATE_CATALOG = [
@@ -88,13 +90,41 @@ const loadRendererModule = async () => {
   return rendererModulePromise;
 };
 
+const loadBackendCatalog = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/templates`, {
+      method: "GET",
+      credentials: "include",
+      cache: "no-store",
+    });
+    if (!response.ok) return [];
+    const payload = await response.json().catch(() => ({}));
+    return normalizeCatalog(payload?.templates);
+  } catch {
+    return [];
+  }
+};
+
 export const getTemplateCatalog = async () => {
+  try {
+    const backendCatalog = await loadBackendCatalog();
+    if (backendCatalog.length) return backendCatalog;
+    // Prefer local static fallback before renderer package catalog.
+    // Renderer package can lag behind local template work-in-progress.
+    return FALLBACK_TEMPLATE_CATALOG;
+  } catch (err) {
+    console.error("[templateCatalog] backend catalog error:", err);
+    return FALLBACK_TEMPLATE_CATALOG;
+  }
+};
+
+export const getTemplateCatalogFromRenderer = async () => {
   try {
     const renderer = await loadRendererModule();
     const normalized = normalizeCatalog(renderer.TEMPLATE_CATALOG);
     return normalized.length ? normalized : FALLBACK_TEMPLATE_CATALOG;
   } catch (err) {
-    console.error("[templateCatalog] getTemplateCatalog error:", err);
+    console.error("[templateCatalog] renderer catalog error:", err);
     return FALLBACK_TEMPLATE_CATALOG;
   }
 };

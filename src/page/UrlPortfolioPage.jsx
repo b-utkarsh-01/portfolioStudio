@@ -1,10 +1,11 @@
 import { Navigate, useParams, useSearchParams } from "react-router-dom";
+import { normalizePortfolioForRender } from "../features/portfolio/defensivePortfolio";
 import { decodePortfolioDataFromParam } from "../features/portfolio/urlPortfolio";
 import { Suspense, lazy, useEffect, useState } from "react";
 import PreviewBackButton from "./PreviewBackButton";
 import LoadingState from "../layout/LoadingState";
 
-const TemplatePortfolioRenderer = lazy(() => import("portfolio-template-renderer"));
+const TemplatePortfolioRenderer = lazy(() => import("../features/portfolio/templateRendererBridge"));
 const PassthroughFrame = ({ children }) => <>{children}</>;
 
 const UrlPortfolioPage = ({ appReady = true }) => {
@@ -14,12 +15,12 @@ const UrlPortfolioPage = ({ appReady = true }) => {
   const [previewTier, setPreviewTier] = useState("neutral");
   const [TemplatePreviewFrame, setTemplatePreviewFrame] = useState(() => PassthroughFrame);
   const encodedData = payload;
-  const portfolioData = decodePortfolioDataFromParam(encodedData);
+  const portfolioData = normalizePortfolioForRender(decodePortfolioDataFromParam(encodedData));
   const requestedTemplateId = searchParams.get("templateId") || "default-v4";
   useEffect(() => {
     let cancelled = false;
     const loadRendererApi = async () => {
-      const renderer = await import("portfolio-template-renderer");
+      const renderer = await import("../features/portfolio/templateRendererBridge");
       if (cancelled) return;
       const templateMeta = renderer.getTemplateById(requestedTemplateId);
       setResolvedTemplateId(templateMeta?.id || "default-v4");

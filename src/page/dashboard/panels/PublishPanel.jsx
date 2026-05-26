@@ -5,7 +5,18 @@ const emptyCertification = { name: "", provider: "", link: "" };
 const removeBtnClass =
   "inline-flex h-10 w-10 items-center justify-center rounded-lg border border-rose-500/70 text-rose-300 hover:bg-rose-500/20 hover:text-rose-200 focus:outline-none focus:ring-2 focus:ring-rose-400/60";
 
-const PublishPanel = ({ form, onCollectionItemAdd, onCollectionItemRemove, onCollectionItemChange }) => {
+const PublishPanel = ({
+  form,
+  onCollectionItemAdd,
+  onCollectionItemRemove,
+  onCollectionItemChange,
+  onFieldChange,
+  onPublish,
+  onUnpublish,
+  publishing,
+  unpublishing,
+  publishStatus,
+}) => {
   const certifications = Array.isArray(form.certificationItems) ? form.certificationItems : [];
 
   return (
@@ -72,7 +83,45 @@ const PublishPanel = ({ form, onCollectionItemAdd, onCollectionItemRemove, onCol
       </section>
 
       <div className="rounded-xl border border-slate-700 bg-slate-950/40 p-4">
-        <p className="text-sm text-slate-300">Final step: Save your portfolio first, then preview via URL data.</p>
+        <p className="text-sm text-slate-300">Final step: Save your portfolio first, then publish with slug + visibility.</p>
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          <input
+            value={form.slug || ""}
+            onChange={onFieldChange?.("slug")}
+            placeholder="Public slug (e.g. john-doe)"
+            className={`${inputClassName} mt-0`}
+          />
+          <select
+            value={form.visibility || "public"}
+            onChange={onFieldChange?.("visibility")}
+            className={`${inputClassName} mt-0`}
+          >
+            <option value="public">Public</option>
+            <option value="private">Private</option>
+          </select>
+        </div>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={onPublish}
+            disabled={publishing}
+            className="rounded-lg border border-slate-600 bg-emerald-400 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-60"
+          >
+            {publishing ? "Publishing..." : "Publish"}
+          </button>
+          <button
+            type="button"
+            onClick={onUnpublish}
+            disabled={unpublishing}
+            className="rounded-lg border border-slate-600 px-4 py-2 text-sm text-slate-200 hover:bg-red-600 hover:border-none disabled:opacity-90"
+          >
+            {unpublishing ? "Updating..." : "Unpublish"}
+          </button>
+        </div>
+        <p className="mt-2 text-xs text-slate-400">
+          Status: {publishStatus?.status || "draft"} | Visibility: {publishStatus?.visibility || "private"} | Slug:{" "}
+          {publishStatus?.slug || "-"}
+        </p>
       </div>
     </>
   );

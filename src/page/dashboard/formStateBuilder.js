@@ -21,9 +21,36 @@ export const buildFormState = (portfolioData, templateId = "premium-v1") => {
   const profile = base?.profile ?? {};
   const skills = base?.skills ?? {};
   const contacts = Array.isArray(profile.contacts) ? profile.contacts : [];
+  const mergeRequiredStages = (incomingStages, fallbackStages) => {
+    const fallback = Array.isArray(fallbackStages) ? fallbackStages : [];
+    const incoming = Array.isArray(incomingStages) ? incomingStages : [];
+    const incomingMap = new Map(incoming.map((stage) => [`${stage?.id || ""}`, stage]));
+    const merged = fallback.map((stage) => {
+      const id = `${stage?.id ?? ""}`;
+      const current = incomingMap.get(id);
+      return {
+        id,
+        title: `${current?.title ?? stage?.title ?? ""}`,
+        enabled: current?.enabled !== false,
+      };
+    });
+    const extra = incoming
+      .filter((stage) => {
+        const id = `${stage?.id || ""}`;
+        return id && !fallback.some((fallbackStage) => `${fallbackStage?.id || ""}` === id);
+      })
+      .map((stage) => ({
+        id: `${stage?.id ?? ""}`,
+        title: `${stage?.title ?? ""}`,
+        enabled: stage?.enabled !== false,
+      }));
+    return [...merged, ...extra];
+  };
 
   return {
     templateId,
+    slug: "",
+    visibility: "public",
     name: profile.name ?? "",
     titles: (profile.title ?? []).join("\n"),
     summary: profile.summary ?? "",
@@ -56,18 +83,7 @@ export const buildFormState = (portfolioData, templateId = "premium-v1") => {
     serviceItems: servicesToItems(base?.services),
     testimonialItems: testimonialsToItems(base?.testimonials),
     certificationItems: certificationsToItems(base?.certifications),
-    layoutStages:
-      Array.isArray(base?.layout?.stages) && base.layout.stages.length
-        ? base.layout.stages.map((stage) => ({
-            id: `${stage?.id ?? ""}`,
-            title: `${stage?.title ?? ""}`,
-            enabled: stage?.enabled !== false,
-          }))
-        : fallbackLayoutStages.map((stage) => ({
-            id: `${stage?.id ?? ""}`,
-            title: `${stage?.title ?? ""}`,
-            enabled: stage?.enabled !== false,
-          })),
+    layoutStages: mergeRequiredStages(base?.layout?.stages, fallbackLayoutStages),
     customStages: baseCustomStages.map((stage) => ({
       id: `${stage?.id ?? ""}`,
       kind: stage?.kind === "cards" ? "cards" : "paragraph",

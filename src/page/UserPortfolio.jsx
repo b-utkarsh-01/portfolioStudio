@@ -1,17 +1,19 @@
 import { Suspense, lazy, useEffect, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
-import { getTemplateById } from "../features/portfolio/templateCatalog";
-import { getPortfolioByUsernameApi } from "../features/portfolio/portfolioApi";
+import { normalizePortfolioForRender } from "../features/portfolio/defensivePortfolio";
+import { getTemplateById } from "../features/portfolio/templateRendererBridge";
+import { getPortfolioBySlugApi, getPortfolioByUsernameApi } from "../features/portfolio/portfolioApi";
 import LoadingState from "../layout/LoadingState";
 
-const TemplatePortfolioRenderer = lazy(() => import("portfolio-template-renderer"));
+const TemplatePortfolioRenderer = lazy(() => import("../features/portfolio/templateRendererBridge"));
 const PassthroughFrame = ({ children }) => <>{children}</>;
 
-const UserPortfolio = ({ appReady, withTemplateLayout = false }) => {
-  const { username = "" } = useParams();
+const UserPortfolio = ({ appReady, withTemplateLayout = false, lookupBy = "username" }) => {
+  const { username = "", slug = "" } = useParams();
   const [portfolio, setPortfolio] = useState(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [isPrivate, setIsPrivate] = useState(false);
   const [resolvedTemplateId, setResolvedTemplateId] = useState("default-v4");
   const [TemplatePreviewFrame, setTemplatePreviewFrame] = useState(() => PassthroughFrame);
 
@@ -20,12 +22,18 @@ const UserPortfolio = ({ appReady, withTemplateLayout = false }) => {
 
     const loadPortfolio = async () => {
       try {
-        const payload = await getPortfolioByUsernameApi(username);
+        const payload =
+          lookupBy === "slug" ? await getPortfolioBySlugApi(slug) : await getPortfolioByUsernameApi(username);
         if (!cancelled) {
           setPortfolio(payload.portfolio ?? null);
         }
-      } catch {
-        if (!cancelled) setNotFound(true);
+      } catch (error) {
+        if (cancelled) return;
+        if (error?.code === "PORTFOLIO_PRIVATE" || error?.status === 403) {
+          setIsPrivate(true);
+          return;
+        }
+        setNotFound(true);
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -35,7 +43,7 @@ const UserPortfolio = ({ appReady, withTemplateLayout = false }) => {
     return () => {
       cancelled = true;
     };
-  }, [username]);
+  }, [lookupBy, slug, username]);
 
   useEffect(() => {
     let cancelled = false;
@@ -43,7 +51,7 @@ const UserPortfolio = ({ appReady, withTemplateLayout = false }) => {
       const templateId = portfolio?.templateId || "default-v4";
       const [templateMeta, renderer] = await Promise.all([
         getTemplateById(templateId),
-        import("portfolio-template-renderer"),
+        import("../features/portfolio/templateRendererBridge"),
       ]);
       if (cancelled) return;
       setResolvedTemplateId(templateMeta?.id || "default-v4");
@@ -59,6 +67,10 @@ const UserPortfolio = ({ appReady, withTemplateLayout = false }) => {
     return <LoadingState title="Loading portfolio..." subtitle="Fetching profile details and template settings." />;
   }
 
+  if (isPrivate) {
+    return <Navigate to="/portfolio-private" replace />;
+  }
+
   if (notFound || !portfolio?.data) {
     return <Navigate to="/" replace />;
   }
@@ -69,7 +81,11 @@ const UserPortfolio = ({ appReady, withTemplateLayout = false }) => {
       <TemplatePortfolioRenderer
         appReady={appReady}
         templateId={resolvedTemplateId}
-        portfolioData={portfolio.data}
+        portfolioData={{
+          ...normalizePortfolioForRender(portfolio.data),
+          renderMode: portfolio?.renderMode || "static",
+          aiTemplateSpec: portfolio?.aiTemplateSpec || null,
+        }}
       />
     </Suspense>
   );
@@ -80,7 +96,11 @@ const UserPortfolio = ({ appReady, withTemplateLayout = false }) => {
     return (
       <TemplatePreviewFrame
         templateId={resolvedTemplateId}
-        portfolioData={portfolio.data}
+        portfolioData={{
+          ...normalizePortfolioForRender(portfolio.data),
+          renderMode: portfolio?.renderMode || "static",
+          aiTemplateSpec: portfolio?.aiTemplateSpec || null,
+        }}
         showPreviewLabel={false}
       >
         {content}
