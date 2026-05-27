@@ -136,19 +136,23 @@ const TemplatesPage = () => {
           ].join(" ")}
         >
           {activeTier === "ai" ? (
-            <div className="sm:col-span-2 lg:col-span-3">
+            <div className="sm:col-span-2 lg:col-span-3 ">
               {isAuthenticated ? (
                 <AiStudioPanel applyRedirectPath="/dashboard" />
               ) : (
-                <div className="rounded-2xl border border-slate-700 bg-slate-900/60 p-6 text-center">
-                  <p className="text-sm text-slate-300">AI portfolio generate karne ke liye login required hai.</p>
+                <div className="h-full flex items-center justify-center rounded-2xl border border-slate-700 bg-slate-900/60 p-6 text-center">
+                  <div className="flex flex-col gap-4">
+                  <p className="text-xl  text-slate-300">Your AI portfolio is just one login away.</p>
+                 
                   <button
                     type="button"
                     onClick={() => navigate("/auth", { state: { from: { pathname: "/templates", search: "?tier=ai" } } })}
-                    className="mt-3 rounded-md bg-cyan-600 px-3 py-2 text-sm font-semibold text-white hover:bg-cyan-500"
+                    className="w-fit m-auto rounded-md bg-cyan-600 px-3 py-2 text-sm font-semibold text-white hover:bg-cyan-500"
                   >
                     Login To Continue
                   </button>
+                 
+                  </div>
                 </div>
               )}
             </div>
