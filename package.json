@@ -21,9 +21,9 @@
     "lucide-react": "^0.575.0",
     "motion": "^12.34.3",
     "ogl": "^1.0.11",
-    "portfolio-studio-default": "https://codeload.github.com/b-utkarsh-01/portfolioStudio-default/tar.gz/main",
-    "portfolio-studio-premium": "https://codeload.github.com/b-utkarsh-01/portfolioStudio-premium/tar.gz/main",
-    "portfolio-template-renderer": "https://codeload.github.com/b-utkarsh-01/portfolioStudio-template-renderer/tar.gz/main",
+    "portfolio-studio-default": "https://codeload.github.com/b-utkarsh-01/portfolioStudio-default/tar.gz/3af45e7496a6b900ecffc4528fb6047502f75015",
+    "portfolio-studio-premium": "https://codeload.github.com/b-utkarsh-01/portfolioStudio-premium/tar.gz/1f001ff682710c20108421fc8b9e78dacf444c69",
+    "portfolio-template-renderer": "https://codeload.github.com/b-utkarsh-01/portfolioStudio-template-renderer/tar.gz/c544e70708cd3da9f129a2812c2420aa43533bca",
     "postprocessing": "^6.38.3",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
@@ -49,11 +49,11 @@
     "vite": "^7.3.1"
   },
   "overrides": {
-    "portfolio-studio-default": "https://codeload.github.com/b-utkarsh-01/portfolioStudio-default/tar.gz/main",
-    "portfolio-studio-premium": "https://codeload.github.com/b-utkarsh-01/portfolioStudio-premium/tar.gz/main",
+    "portfolio-studio-default": "https://codeload.github.com/b-utkarsh-01/portfolioStudio-default/tar.gz/3af45e7496a6b900ecffc4528fb6047502f75015",
+    "portfolio-studio-premium": "https://codeload.github.com/b-utkarsh-01/portfolioStudio-premium/tar.gz/1f001ff682710c20108421fc8b9e78dacf444c69",
     "portfolio-template-renderer": {
-      "portfolio-studio-default": "https://codeload.github.com/b-utkarsh-01/portfolioStudio-default/tar.gz/main",
-      "portfolio-studio-premium": "https://codeload.github.com/b-utkarsh-01/portfolioStudio-premium/tar.gz/main"
+      "portfolio-studio-default": "https://codeload.github.com/b-utkarsh-01/portfolioStudio-default/tar.gz/3af45e7496a6b900ecffc4528fb6047502f75015",
+      "portfolio-studio-premium": "https://codeload.github.com/b-utkarsh-01/portfolioStudio-premium/tar.gz/1f001ff682710c20108421fc8b9e78dacf444c69"
     }
   }
 }
