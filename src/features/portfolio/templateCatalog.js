@@ -62,9 +62,7 @@ export const getTemplateCatalog = async () => {
     const renderer = await loadRendererModule();
     const rendererCatalog = normalizeCatalog(renderer.TEMPLATE_CATALOG);
     const backendCatalog = await loadBackendCatalog();
-    // Prefer renderer metadata (bundled with the app) over backend values.
-    // Backend is treated as a fallback for environments where renderer is unavailable/outdated.
-    return mergeCatalogs(rendererCatalog, backendCatalog);
+    return mergeCatalogs(backendCatalog, rendererCatalog);
   } catch (err) {
     console.error("[templateCatalog] catalog load error:", err);
     return [];
