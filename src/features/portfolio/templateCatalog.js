@@ -2,63 +2,6 @@ import { API_BASE_URL } from "../api/config";
 
 let rendererModulePromise;
 
-const FALLBACK_TEMPLATE_CATALOG = [
-  {
-    id: "default-horizon",
-    tier: "default",
-    name: "Horizon",
-    description: "Clean portfolio layout with modern sections.",
-  },
-  {
-    id: "default-slate",
-    tier: "default",
-    name: "Slate",
-    description: "Minimal dark style with strong readability.",
-  },
-  {
-    id: "default-nova",
-    tier: "default",
-    name: "Chronicle",
-    description: "Editorial dark layout with lookbook typography and bronze accents.",
-  },
-  {
-    id: "default-v4",
-    tier: "default",
-    name: "Cyberpunk Glassmorphism",
-    description: "Futuristic frosted-glass visual style.",
-  },
-  {
-    id: "premium-v1",
-    tier: "premium",
-    name: "Premium Nebula",
-    description: "Creative glow effects and premium visual depth.",
-  },
-  {
-    id: "premium-obsidian",
-    tier: "premium",
-    name: "Premium Obsidian",
-    description: "High-contrast premium layout with bold surfaces.",
-  },
-  {
-    id: "premium-cartoon",
-    tier: "premium",
-    name: "Premium Cartoon",
-    description: "Playful style with character-driven visual elements.",
-  },
-  {
-    id: "premium-cyber",
-    tier: "premium",
-    name: "Premium Cyber",
-    description: "Neon cyberpunk look with strong visual motion.",
-  },
-  {
-    id: "premium-linux",
-    tier: "premium",
-    name: "Premium Linux Terminal",
-    description: "Terminal-inspired interactive portfolio experience.",
-  },
-];
-
 const normalizeTier = (tierValue) => {
   const normalized = `${tierValue || ""}`.toLowerCase().trim();
   if (normalized === "default" || normalized === "free" || normalized === "neutral") return "default";
@@ -115,22 +58,24 @@ const loadBackendCatalog = async () => {
 
 export const getTemplateCatalog = async () => {
   try {
+    // Source of truth: renderer package (default + premium repos).
+    const renderer = await loadRendererModule();
+    const rendererCatalog = normalizeCatalog(renderer.TEMPLATE_CATALOG);
     const backendCatalog = await loadBackendCatalog();
-    return mergeCatalogs(backendCatalog, FALLBACK_TEMPLATE_CATALOG);
+    return mergeCatalogs(backendCatalog, rendererCatalog);
   } catch (err) {
-    console.error("[templateCatalog] backend catalog error:", err);
-    return FALLBACK_TEMPLATE_CATALOG;
+    console.error("[templateCatalog] catalog load error:", err);
+    return [];
   }
 };
 
 export const getTemplateCatalogFromRenderer = async () => {
   try {
     const renderer = await loadRendererModule();
-    const normalized = normalizeCatalog(renderer.TEMPLATE_CATALOG);
-    return normalized.length ? normalized : FALLBACK_TEMPLATE_CATALOG;
+    return normalizeCatalog(renderer.TEMPLATE_CATALOG);
   } catch (err) {
     console.error("[templateCatalog] renderer catalog error:", err);
-    return FALLBACK_TEMPLATE_CATALOG;
+    return [];
   }
 };
 
