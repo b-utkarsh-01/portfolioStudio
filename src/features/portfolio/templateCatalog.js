@@ -2,16 +2,6 @@ import { API_BASE_URL } from "../api/config";
 
 let rendererModulePromise;
 
-const TEMPLATE_ID_ALIASES = {
-  "premium-nebula": "premium-v1",
-  nebula: "premium-v1",
-};
-
-const resolveTemplateId = (templateId) => {
-  const normalized = `${templateId || ""}`.trim().toLowerCase();
-  return TEMPLATE_ID_ALIASES[normalized] || templateId;
-};
-
 const normalizeTier = (tierValue) => {
   const normalized = `${tierValue || ""}`.toLowerCase().trim();
   if (normalized === "default" || normalized === "free" || normalized === "neutral") return "default";
@@ -24,9 +14,8 @@ const normalizeCatalog = (catalog) =>
     .filter((template) => template && typeof template.id === "string")
     .map((template) => ({
       ...template,
-      id: resolveTemplateId(template.id),
       tier: normalizeTier(template.tier),
-      name: typeof template.name === "string" && template.name.trim() ? template.name : resolveTemplateId(template.id),
+      name: typeof template.name === "string" && template.name.trim() ? template.name : template.id,
       description:
         typeof template.description === "string" && template.description.trim()
           ? template.description
