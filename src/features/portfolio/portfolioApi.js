@@ -15,7 +15,13 @@ export const upsertMyPortfolioApi = (payload) =>
   });
 
 export const checkSlugAvailabilityApi = (slug) =>
-  apiRequest(`/portfolios/slug-availability/${encodeURIComponent(slug)}`);
+  apiRequest(`/portfolios/slug-availability/${encodeURIComponent(slug)}`).catch((error) => {
+    // Backward compatibility with older deployments that exposed singular /portfolio routes.
+    if (error?.status === 404) {
+      return apiRequest(`/portfolio/slug-availability/${encodeURIComponent(slug)}`);
+    }
+    throw error;
+  });
 
 export const publishMyPortfolioApi = (payload) =>
   apiRequest("/portfolios/me/publish", {

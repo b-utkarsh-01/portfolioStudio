@@ -134,6 +134,9 @@ const Dashboard = () => {
 
       const slug = `${form.slug || ""}`.trim();
       if (slug) {
+        if (slug.length < 3) {
+          throw new Error("Slug must be at least 3 characters.");
+        }
         const availability = await checkSlugAvailabilityApi(slug);
         if (!availability?.available) {
           throw new Error(availability?.reason === "reserved" ? "Slug is reserved." : "Slug is already taken.");

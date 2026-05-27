@@ -15,6 +15,17 @@ export const TEMPLATE_CATALOG = [
 export const getTemplateById = (templateId) =>
   TEMPLATE_CATALOG.find((template) => template?.id === templateId) || TEMPLATE_CATALOG[0] || null;
 
+const TEMPLATE_ID_ALIASES = {
+  "premium-nebula": "premium-v1",
+  nebula: "premium-v1",
+  "default-cyberpunk": "default-v4",
+};
+
+const resolveTemplateId = (templateId) => {
+  const normalized = `${templateId || ""}`.trim().toLowerCase();
+  return TEMPLATE_ID_ALIASES[normalized] || templateId;
+};
+
 export const TemplatePreviewFrame = ({
   templateId,
   portfolioData,
@@ -35,9 +46,10 @@ export const TemplatePreviewFrame = ({
 };
 
 const TemplatePortfolioRenderer = ({ appReady, templateId = "default-horizon", portfolioData = null }) => {
+  const resolvedRequestedTemplateId = resolveTemplateId(templateId);
   const renderMode = `${portfolioData?.renderMode || "static"}`.toLowerCase();
   const aiTemplateSpec = portfolioData?.aiTemplateSpec || null;
-  const normalizedTemplateId = `${templateId || ""}`.toLowerCase();
+  const normalizedTemplateId = `${resolvedRequestedTemplateId || ""}`.toLowerCase();
   const isAiTemplate = normalizedTemplateId.startsWith("ai-");
   const isDynamic =
     aiTemplateSpec &&
@@ -49,7 +61,7 @@ const TemplatePortfolioRenderer = ({ appReady, templateId = "default-horizon", p
     return <AiDynamicTemplateRenderer spec={aiTemplateSpec} portfolioData={portfolioData || {}} />;
   }
 
-  const safeTemplateId = getTemplateById(templateId)?.id || "default-horizon";
+  const safeTemplateId = getTemplateById(resolvedRequestedTemplateId)?.id || "default-horizon";
   const isDefaultTemplate = `${safeTemplateId}`.startsWith("default-");
 
   if (isDefaultTemplate) {
