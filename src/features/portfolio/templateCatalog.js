@@ -80,6 +80,14 @@ const normalizeCatalog = (catalog) =>
     }))
     .filter((template) => template.tier === "default" || template.tier === "premium");
 
+const mergeCatalogs = (primary, fallback) => {
+  const merged = new Map();
+  [...(Array.isArray(fallback) ? fallback : []), ...(Array.isArray(primary) ? primary : [])].forEach((template) => {
+    if (template?.id) merged.set(template.id, template);
+  });
+  return Array.from(merged.values());
+};
+
 const loadRendererModule = async () => {
   if (!rendererModulePromise) {
     rendererModulePromise = import("portfolio-template-renderer").catch((err) => {
@@ -108,10 +116,7 @@ const loadBackendCatalog = async () => {
 export const getTemplateCatalog = async () => {
   try {
     const backendCatalog = await loadBackendCatalog();
-    if (backendCatalog.length) return backendCatalog;
-    // Prefer local static fallback before renderer package catalog.
-    // Renderer package can lag behind local template work-in-progress.
-    return FALLBACK_TEMPLATE_CATALOG;
+    return mergeCatalogs(backendCatalog, FALLBACK_TEMPLATE_CATALOG);
   } catch (err) {
     console.error("[templateCatalog] backend catalog error:", err);
     return FALLBACK_TEMPLATE_CATALOG;

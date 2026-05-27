@@ -6,11 +6,15 @@ import { normalizePortfolioForRender } from "../features/portfolio/defensivePort
 import PreviewBackButton from "./PreviewBackButton";
 
 const TemplatePortfolioRenderer = lazy(() => import("../features/portfolio/templateRendererBridge"));
+const PassthroughFrame = ({ children }) => <>{children}</>;
 
 const MyPortfolioPreviewPage = ({ appReady = true }) => {
   const [portfolio, setPortfolio] = useState(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [resolvedTemplateId, setResolvedTemplateId] = useState("default-v4");
+  const [previewTier, setPreviewTier] = useState("neutral");
+  const [TemplatePreviewFrame, setTemplatePreviewFrame] = useState(() => PassthroughFrame);
 
   useEffect(() => {
     let cancelled = false;
@@ -30,6 +34,23 @@ const MyPortfolioPreviewPage = ({ appReady = true }) => {
     };
   }, []);
 
+  useEffect(() => {
+    let cancelled = false;
+    const loadRendererApi = async () => {
+      const renderer = await import("../features/portfolio/templateRendererBridge");
+      if (cancelled) return;
+      const templateId = portfolio?.templateId || "default-v4";
+      const templateMeta = renderer.getTemplateById(templateId);
+      setResolvedTemplateId(templateMeta?.id || "default-v4");
+      setPreviewTier(templateMeta?.tier === "premium" ? "premium" : "neutral");
+      setTemplatePreviewFrame(() => renderer.TemplatePreviewFrame || PassthroughFrame);
+    };
+    loadRendererApi();
+    return () => {
+      cancelled = true;
+    };
+  }, [portfolio?.templateId]);
+
   if (loading) {
     return <LoadingState title="Loading preview..." subtitle="Preparing live portfolio preview." compact />;
   }
@@ -38,7 +59,6 @@ const MyPortfolioPreviewPage = ({ appReady = true }) => {
     return <Navigate to="/dashboard" replace />;
   }
 
-  const resolvedTemplateId = portfolio?.templateId || "default-v4";
   const isAiTemplate = `${resolvedTemplateId || ""}`.toLowerCase().startsWith("ai-");
   const renderPayload = {
     ...normalizePortfolioForRender(portfolio.data),
@@ -46,15 +66,33 @@ const MyPortfolioPreviewPage = ({ appReady = true }) => {
     aiTemplateSpec: isAiTemplate ? portfolio?.aiTemplateSpec || null : null,
   };
 
+  const content = (
+    <Suspense fallback={<LoadingState title="Rendering..." subtitle="Applying latest saved data." compact />}>
+      <TemplatePortfolioRenderer appReady={appReady} templateId={resolvedTemplateId} portfolioData={renderPayload} />
+    </Suspense>
+  );
+
+  if (previewTier === "premium") {
+    return (
+      <>
+        <PreviewBackButton fallbackPath="/dashboard" />
+        <div className="fixed right-3 top-3 z-40 rounded-md border border-slate-600 bg-slate-900/90 px-2 py-1 text-[11px] text-slate-200">
+          mode: {portfolio?.renderMode || "static"} | spec: {portfolio?.aiTemplateSpec ? "yes" : "no"}
+        </div>
+        <TemplatePreviewFrame templateId={resolvedTemplateId} portfolioData={renderPayload} showPreviewLabel={false}>
+          {content}
+        </TemplatePreviewFrame>
+      </>
+    );
+  }
+
   return (
     <>
       <PreviewBackButton fallbackPath="/dashboard" />
       <div className="fixed right-3 top-3 z-40 rounded-md border border-slate-600 bg-slate-900/90 px-2 py-1 text-[11px] text-slate-200">
         mode: {portfolio?.renderMode || "static"} | spec: {portfolio?.aiTemplateSpec ? "yes" : "no"}
       </div>
-      <Suspense fallback={<LoadingState title="Rendering..." subtitle="Applying latest saved data." compact />}>
-        <TemplatePortfolioRenderer appReady={appReady} templateId={resolvedTemplateId} portfolioData={renderPayload} />
-      </Suspense>
+      {content}
     </>
   );
 };
