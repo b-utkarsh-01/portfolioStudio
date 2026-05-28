@@ -7,6 +7,8 @@ import ProtectedRoute from "./routing/ProtectedRoute";
 import { ToastContainer } from "react-toastify";
 
 const Auth = lazy(() => import("./page/Auth"));
+const ForgotPasswordPage = lazy(() => import("./page/ForgotPasswordPage"));
+const ResetPasswordPage = lazy(() => import("./page/ResetPasswordPage"));
 const Dashboard = lazy(() => import("./page/Dashboard"));
 const ProfilePage = lazy(() => import("./page/ProfilePage"));
 const TemplateV1PreviewPage = lazy(() => import("./page/TemplateV1PreviewPage"));
@@ -71,6 +73,8 @@ const App = () => (
             }
           />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route
             path="/dashboard"
             element={
