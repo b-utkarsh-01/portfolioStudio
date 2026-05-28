@@ -12,13 +12,29 @@ const TemplatesPage = () => {
   const isValidTier = initialTier === "default" || initialTier === "premium" || initialTier === "ai";
   const [activeTier, setActiveTier] = useState(isValidTier ? initialTier : "default");
   const [templates, setTemplates] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
   const isAiTier = activeTier === "ai";
 
   useEffect(() => {
     let cancelled = false;
     const load = async () => {
-      const catalog = await getTemplateCatalog();
-      if (!cancelled) setTemplates(catalog);
+      setLoading(true);
+      setHasError(false);
+      try {
+        const catalog = await getTemplateCatalog();
+        if (!cancelled) {
+          setTemplates(catalog);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setHasError(true);
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
     };
     load();
     return () => {
@@ -42,7 +58,7 @@ const TemplatesPage = () => {
       ),
     [activeTier, templates]
   );
-  const showComingSoonBanner = activeTier !== "ai" && visibleTemplates.length === 0;
+  const showComingSoonBanner = !loading && activeTier !== "ai" && (hasError || visibleTemplates.length === 0);
 
   const comingSoonContent = useMemo(() => {
     if (activeTier === "default") {
@@ -157,6 +173,15 @@ const TemplatesPage = () => {
               )}
             </div>
           ) : null}
+          {loading && activeTier !== "ai" ? (
+            <div className="sm:col-span-2 lg:col-span-3 rounded-2xl border border-slate-700 bg-slate-900/60 p-7 text-center min-h-[220px] flex flex-col items-center justify-center">
+              <div className="mx-auto mb-4 flex h-10 w-10 items-center justify-center rounded-full border border-cyan-400/40 bg-cyan-500/10">
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-cyan-300 border-t-transparent" />
+              </div>
+              <p className="text-base font-semibold text-slate-100">Fetching templates...</p>
+              <p className="mt-1 text-sm text-slate-400">Please wait while we load default and premium templates.</p>
+            </div>
+          ) : null}
           {showComingSoonBanner ? (
             <div className="sm:col-span-2 lg:col-span-3 rounded-2xl border border-slate-700 bg-slate-900/60 p-7 text-center min-h-[220px] flex flex-col items-center justify-center">
               <p className="text-xs uppercase tracking-[0.2em] text-orange-300">Coming Soon</p>
@@ -168,7 +193,7 @@ const TemplatesPage = () => {
               </p>
             </div>
           ) : null}
-          {!showComingSoonBanner && activeTier !== "ai" && visibleTemplates.map((template, index) => (
+          {!loading && !showComingSoonBanner && activeTier !== "ai" && visibleTemplates.map((template, index) => (
             <article key={template.id} className="rounded-2xl border border-slate-800 bg-slate-900/40 p-5">
               <p className="text-xs uppercase tracking-wide text-orange-300">
                 Template {`${index + 1}`.padStart(2, "0")} | {template.tier}

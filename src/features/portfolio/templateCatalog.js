@@ -38,7 +38,7 @@ export const getTemplateCatalog = async () => {
     return normalizeCatalog(renderer.TEMPLATE_CATALOG);
   } catch (err) {
     console.error("[templateCatalog] catalog load error:", err);
-    return [];
+    throw err;
   }
 };
 
