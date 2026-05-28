@@ -22,7 +22,7 @@
     "motion": "^12.34.3",
     "ogl": "^1.0.11",
     "portfolio-studio-default": "https://codeload.github.com/b-utkarsh-01/portfolioStudio-default/tar.gz/3af45e7496a6b900ecffc4528fb6047502f75015",
-    "portfolio-studio-premium": "https://codeload.github.com/b-utkarsh-01/portfolioStudio-premium/tar.gz/59fc501ddca68a1a201c4e3c5b5bd0cc05176487",
+    "portfolio-studio-premium": "https://codeload.github.com/b-utkarsh-01/portfolioStudio-premium/tar.gz/e31e987d6870a9d64e7e47275c2d6ddac0e50bb4",
     "portfolio-template-renderer": "https://codeload.github.com/b-utkarsh-01/portfolioStudio-template-renderer/tar.gz/8d42b7eb4bf28a3f1e55da77b0f7b5b226643733",
     "postprocessing": "^6.38.3",
     "react": "^19.2.0",
@@ -50,10 +50,10 @@
   },
   "overrides": {
     "portfolio-studio-default": "https://codeload.github.com/b-utkarsh-01/portfolioStudio-default/tar.gz/3af45e7496a6b900ecffc4528fb6047502f75015",
-    "portfolio-studio-premium": "https://codeload.github.com/b-utkarsh-01/portfolioStudio-premium/tar.gz/59fc501ddca68a1a201c4e3c5b5bd0cc05176487",
+    "portfolio-studio-premium": "https://codeload.github.com/b-utkarsh-01/portfolioStudio-premium/tar.gz/e31e987d6870a9d64e7e47275c2d6ddac0e50bb4",
     "portfolio-template-renderer": {
       "portfolio-studio-default": "https://codeload.github.com/b-utkarsh-01/portfolioStudio-default/tar.gz/3af45e7496a6b900ecffc4528fb6047502f75015",
-      "portfolio-studio-premium": "https://codeload.github.com/b-utkarsh-01/portfolioStudio-premium/tar.gz/59fc501ddca68a1a201c4e3c5b5bd0cc05176487"
+      "portfolio-studio-premium": "https://codeload.github.com/b-utkarsh-01/portfolioStudio-premium/tar.gz/e31e987d6870a9d64e7e47275c2d6ddac0e50bb4"
     }
   }
 }
