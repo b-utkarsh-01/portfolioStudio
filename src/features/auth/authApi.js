@@ -29,3 +29,15 @@ export const updateCurrentUserApi = (payload) =>
     method: "PUT",
     body: JSON.stringify(payload),
   });
+
+export const forgotPasswordApi = (email) =>
+  apiRequest("/auth/forgot-password", {
+    method: "POST",
+    body: JSON.stringify({ email }),
+  });
+
+export const resetPasswordApi = (token, password) =>
+  apiRequest("/auth/reset-password", {
+    method: "POST",
+    body: JSON.stringify({ token, password }),
+  });

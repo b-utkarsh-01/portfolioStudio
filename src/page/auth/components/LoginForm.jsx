@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { inputClassName } from "../registerStages";
 
 const LoginForm = ({
@@ -30,6 +31,11 @@ const LoginForm = ({
         className={inputClassName}
       />
     </label>
+    <div className="flex justify-end">
+      <Link to="/forgot-password" className="text-xs text-slate-400 hover:text-slate-200 underline">
+        Forgot password?
+      </Link>
+    </div>
     {error ? <p className="text-sm text-rose-300">{error}</p> : null}
     <button
       type="submit"
