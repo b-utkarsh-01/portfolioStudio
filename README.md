@@ -1,9 +1,4 @@
 # PortfolioStudio — System Design, Architecture & Future Plan
- 
-> Written for: New engineers + product stakeholders  
-> Based strictly on: Evidence Pack files [1]–[11]  
-> Prepared by: Staff+ Full-Stack Architect review
- 
 ---
  
 ## A. Executive Summary
