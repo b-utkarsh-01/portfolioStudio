@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { Save, Radio } from "lucide-react";
 import Field from "./Field";
 import StageSidebar from "./StageSidebar";
 import CustomStageEditor from "./CustomStageEditor";
@@ -36,6 +37,7 @@ const DashboardForm = ({
   unpublishing = false,
   publishStatus = null,
   initialStageKey = "",
+  onOpenPublish,
 }) => {
   const [stageIndex, setStageIndex] = useState(0);
 
@@ -76,7 +78,7 @@ const DashboardForm = ({
   };
 
   return (
-    <div className="grid min-h-0 gap-4 lg:h-full lg:overflow-hidden lg:grid-cols-[220px_minmax(0,1fr)]">
+    <div className="grid min-h-0 min-w-0 w-full gap-4 lg:h-full lg:overflow-hidden lg:grid-cols-[220px_minmax(0,1fr)]">
       <StageSidebar
         stages={stages}
         stageIndex={stageIndex}
@@ -86,9 +88,9 @@ const DashboardForm = ({
         onResetDefaults={onResetDefaults}
       />
 
-      <section className="frontend-scrollbar min-h-0 min-w-0 space-y-5 rounded-2xl border border-slate-700 bg-slate-900/50 p-4 pr-1 sm:p-5 lg:h-full lg:overflow-y-auto">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-          <div className="w-full sm:max-w-lg">
+      <section className="frontend-scrollbar min-h-0 min-w-0 w-full space-y-5 rounded-2xl border border-slate-700 bg-slate-900/50 p-3.5 sm:p-5 lg:h-full lg:overflow-y-auto overflow-x-hidden">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between min-w-0">
+          <div className="w-full sm:max-w-lg min-w-0">
             <label className="block text-sm text-slate-200">
               <span className="mb-1 flex items-center justify-between gap-2">
                 <span>Stage Name</span>
@@ -102,7 +104,7 @@ const DashboardForm = ({
               />
             </label>
           </div>
-          <p className="hidden text-xs text-slate-400 sm:block sm:self-start sm:pt-0.5">
+          <p className="hidden text-xs text-slate-400 sm:block sm:self-start sm:pt-0.5 shrink-0">
             Step {stageIndex + 1} of {stages.length}
           </p>
         </div>
@@ -128,6 +130,7 @@ const DashboardForm = ({
             publishing={publishing}
             unpublishing={unpublishing}
             publishStatus={publishStatus}
+            onOpenPublish={onOpenPublish}
           />
         ) : null}
 
@@ -139,16 +142,16 @@ const DashboardForm = ({
           />
         ) : null}
 
-        <div className="flex flex-wrap justify-between gap-3">
-
-          <div className="flex gap-5">
+        {/* Global Bottom Stage Navigation & Save Bar */}
+        <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-800">
+          <div className="flex items-center gap-2.5">
             {!isFirstStage ? (
               <button
                 type="button"
                 onClick={goBack}
-                className="rounded-lg border border-slate-600 px-4 py-2 text-sm text-slate-200 hover:bg-slate-800"
+                className="rounded-xl border border-slate-700 bg-slate-800/80 px-4 py-2 text-xs sm:text-sm font-medium text-slate-200 hover:bg-slate-700 transition active:scale-95"
               >
-                Back
+                ← Back
               </button>
             ) : null}
 
@@ -156,40 +159,61 @@ const DashboardForm = ({
               <button
                 type="button"
                 onClick={goNext}
-                className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-400"
+                className="rounded-xl border border-slate-600 bg-slate-800 px-4 py-2 text-xs sm:text-sm font-semibold text-slate-100 hover:bg-slate-700 transition active:scale-95"
               >
-                Next
+                Next Stage →
               </button>
-            ) : (
-              <button
-                type="button"
-                onClick={handleSaveClick}
-                className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-400"
-              >
-                Save Portfolio
-              </button>
-            )}
+            ) : null}
           </div>
 
-          {isLastStage && savedAt && urlDataPortfolioPath ? (
-            <Link
-              to={urlDataPortfolioPath}
-              target="_blank"
-              rel="noreferrer"
-              className="rounded-lg border border-cyan-400 px-4 py-2 text-sm font-semibold text-cyan-300 hover:bg-cyan-500/10"
+          <div className="flex flex-wrap items-center gap-2.5">
+            {onOpenPublish ? (
+              <button
+                type="button"
+                onClick={onOpenPublish}
+                className="inline-flex items-center gap-1.5 rounded-xl border border-cyan-500/40 bg-cyan-500/10 px-3.5 py-2 text-xs sm:text-sm font-semibold text-cyan-300 hover:bg-cyan-500/20 transition active:scale-95"
+              >
+                <Radio className="h-3.5 w-3.5" />
+                <span>Publish</span>
+              </button>
+            ) : null}
+
+            {/* Save Portfolio is ALWAYS accessible at the bottom of ANY stage! */}
+            <button
+              type="button"
+              onClick={handleSaveClick}
+              className="inline-flex items-center gap-2 rounded-xl bg-orange-500 px-5 py-2 text-xs sm:text-sm font-semibold text-white shadow-md shadow-orange-500/20 hover:bg-orange-400 transition active:scale-95"
             >
-              View Portfolio (URL Data)
-            </Link>
-          ) : null}
+              <Save className="h-4 w-4" />
+              <span>Save Portfolio</span>
+            </button>
+
+            {isLastStage && savedAt && urlDataPortfolioPath ? (
+              <Link
+                to={urlDataPortfolioPath}
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-xl border border-cyan-400 px-3.5 py-2 text-xs sm:text-sm font-semibold text-cyan-300 hover:bg-cyan-500/10 transition"
+              >
+                View URL Data
+              </Link>
+            ) : null}
+          </div>
         </div>
 
         {statusDetails.length ? (
           <div className="rounded-xl border border-rose-500/40 bg-rose-500/10 p-3">
             <p className="text-sm font-semibold text-rose-200">Please fix the following:</p>
             <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-rose-200/90">
-              {statusDetails.map((detail, index) => (
-                <li key={`${detail}-${index}`}>{detail}</li>
-              ))}
+              {statusDetails.map((detail, index) => {
+                const text =
+                  typeof detail === "string"
+                    ? detail
+                    : detail?.message
+                      ? `${detail.path ? `${detail.path}: ` : ""}${detail.message}`
+                      : JSON.stringify(detail);
+                return <li key={`${index}-${text}`}>{text}</li>;
+              })}
             </ul>
           </div>
         ) : null}
@@ -199,4 +223,3 @@ const DashboardForm = ({
 };
 
 export default DashboardForm;
-

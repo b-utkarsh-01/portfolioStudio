@@ -5,11 +5,9 @@ import fs from "fs"
 
 const localDefaultIndex = path.resolve(__dirname, "../default-templates/src/index.js");
 const localPremiumIndex = path.resolve(__dirname, "../premium-templates/src/index.js");
-const localRendererIndex = path.resolve(__dirname, "../template-renderer/src/index.jsx");
 const hasLocalTemplateRepos =
   fs.existsSync(localDefaultIndex) &&
-  fs.existsSync(localPremiumIndex) &&
-  fs.existsSync(localRendererIndex);
+  fs.existsSync(localPremiumIndex);
 
 export default defineConfig({
   plugins: [react()],
@@ -40,7 +38,6 @@ export default defineConfig({
           }
 
           if (
-            id.includes("/template-renderer/") ||
             id.includes("/default-templates/") ||
             id.includes("/premium-templates/")
           ) {
@@ -70,7 +67,6 @@ export default defineConfig({
         ? {
             "portfolio-studio-default": localDefaultIndex,
             "portfolio-studio-premium": localPremiumIndex,
-            "portfolio-template-renderer": localRendererIndex,
           }
         : {}),
     },

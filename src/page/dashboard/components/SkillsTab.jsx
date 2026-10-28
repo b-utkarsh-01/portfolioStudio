@@ -11,8 +11,8 @@ const SkillsTab = ({
   onSkillRemove,
   onSkillChange,
 }) => (
-  <div className="space-y-5">
-    <section className="rounded-xl border border-slate-700 bg-slate-900/30 p-4">
+  <div className="space-y-5 min-w-0">
+    <section className="rounded-xl border border-slate-700 bg-slate-900/30 p-3.5 sm:p-4 min-w-0">
       <div className="mb-3">
         <div>
           <p className="text-sm font-semibold text-slate-100">Add Skills</p>
@@ -22,21 +22,21 @@ const SkillsTab = ({
         </div>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-3 min-w-0">
         {(Array.isArray(form.skillsAdditionalGroups) ? form.skillsAdditionalGroups : []).map(
           (group) => (
-            <div key={group.id} className="rounded-lg border border-slate-700 bg-slate-950/40 p-3">
-              <div className="mb-3 flex items-center justify-between gap-2">
+            <div key={group.id} className="rounded-lg border border-slate-700 bg-slate-950/40 p-3 min-w-0">
+              <div className="mb-3 flex items-center justify-between gap-2 min-w-0">
                 <input
                   value={group.name}
                   onChange={(event) => onSkillGroupNameChange?.(group.id, event.target.value)}
                   placeholder="Section Name (e.g., Frontend)"
-                  className={`${inputClassName} mt-0`}
+                  className={`${inputClassName} mt-0 min-w-0 flex-1`}
                 />
                 <button
                   type="button"
                   onClick={() => onSkillGroupRemove?.(group.id)}
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-rose-500/70 text-rose-300 hover:bg-rose-500/20 hover:text-rose-200 focus:outline-none focus:ring-2 focus:ring-rose-400/60"
+                  className="shrink-0 inline-flex h-10 w-10 items-center justify-center rounded-lg border border-rose-500/70 text-rose-300 hover:bg-rose-500/20 hover:text-rose-200 focus:outline-none focus:ring-2 focus:ring-rose-400/60 transition"
                   aria-label="Remove section"
                   title="Remove section"
                 >
@@ -44,19 +44,19 @@ const SkillsTab = ({
                 </button>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-2 min-w-0">
                 {(Array.isArray(group.skills) ? group.skills : []).map((skill, index) => (
-                  <div key={`${group.id}-${index}`} className="flex items-center gap-2">
+                  <div key={`${group.id}-${index}`} className="flex items-center gap-2 min-w-0">
                     <input
                       value={skill}
                       onChange={(event) => onSkillChange?.(group.id, index, event.target.value)}
                       placeholder="Skill name (e.g., HTML)"
-                      className={`${inputClassName} mt-0`}
+                      className={`${inputClassName} mt-0 min-w-0 flex-1`}
                     />
                     <button
                       type="button"
                       onClick={() => onSkillRemove?.(group.id, index)}
-                      className="rounded-lg border border-slate-600 px-3 py-2 text-xs text-slate-300 hover:border-rose-500/70 hover:bg-rose-500/20 hover:text-rose-200 focus:outline-none focus:ring-2 focus:ring-rose-400/50"
+                      className="shrink-0 rounded-lg border border-slate-600 px-3 py-2 text-xs text-slate-300 hover:border-rose-500/70 hover:bg-rose-500/20 hover:text-rose-200 focus:outline-none focus:ring-2 focus:ring-rose-400/50 transition"
                     >
                       Remove
                     </button>
@@ -67,7 +67,7 @@ const SkillsTab = ({
                 <button
                   type="button"
                   onClick={() => onSkillAdd?.(group.id)}
-                  className="mt-3 rounded-lg border border-slate-500 px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-slate-800 w-[70%]"
+                  className="mt-3 rounded-lg border border-slate-500 px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-slate-800 w-full sm:w-[70%] transition"
                 >
                   + Add Skills
                 </button>
@@ -80,7 +80,7 @@ const SkillsTab = ({
         <button
           type="button"
           onClick={onSkillGroupAdd}
-          className="w-full rounded-lg border border-cyan-400/60 px-3 py-2 text-xs font-semibold text-cyan-300 hover:bg-cyan-500/10"
+          className="w-full rounded-lg border border-cyan-400/60 px-3 py-2 text-xs font-semibold text-cyan-300 hover:bg-cyan-500/10 transition"
         >
           + Add Section
         </button>

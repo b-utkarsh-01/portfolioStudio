@@ -41,3 +41,9 @@ export const resetPasswordApi = (token, password) =>
     method: "POST",
     body: JSON.stringify({ token, password }),
   });
+
+export const changePasswordApi = ({ currentPassword, newPassword }) =>
+  apiRequest("/auth/change-password", {
+    method: "POST",
+    body: JSON.stringify({ currentPassword, newPassword }),
+  });

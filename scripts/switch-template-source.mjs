@@ -12,14 +12,11 @@ const raw = fs.readFileSync(packageJsonPath, "utf8");
 const pkg = JSON.parse(raw);
 
 const localDeps = {
-  "portfolio-template-renderer": "file:../template-renderer",
   "portfolio-studio-default": "file:../default-templates",
   "portfolio-studio-premium": "file:../premium-templates",
 };
 
 const gitDeps = {
-  "portfolio-template-renderer":
-    "https://codeload.github.com/b-utkarsh-01/portfolioStudio-template-renderer/tar.gz/main?rev=567fb5a",
   "portfolio-studio-default":
     "https://codeload.github.com/b-utkarsh-01/portfolioStudio-default/tar.gz/main?rev=1f7a95d",
   "portfolio-studio-premium":
@@ -36,14 +33,9 @@ for (const [name, value] of Object.entries(next)) {
 if (pkg.overrides) {
   pkg.overrides["portfolio-studio-default"] = next["portfolio-studio-default"];
   pkg.overrides["portfolio-studio-premium"] = next["portfolio-studio-premium"];
-  if (pkg.overrides["portfolio-template-renderer"]) {
-    pkg.overrides["portfolio-template-renderer"]["portfolio-studio-default"] = next["portfolio-studio-default"];
-    pkg.overrides["portfolio-template-renderer"]["portfolio-studio-premium"] = next["portfolio-studio-premium"];
-  }
 }
 
 fs.writeFileSync(packageJsonPath, `${JSON.stringify(pkg, null, 2)}\n`, "utf8");
 
 console.log(`Switched template dependencies and overrides to: ${mode.toUpperCase()}`);
 console.log("Now run: npm install");
-

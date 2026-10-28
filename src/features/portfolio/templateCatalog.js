@@ -1,4 +1,4 @@
-let rendererModulePromise;
+import { TEMPLATE_CATALOG, getTemplateById as getTemplateByIdSync } from "./templateRendererBridge";
 
 const normalizeTier = (tierValue) => {
   const normalized = `${tierValue || ""}`.toLowerCase().trim();
@@ -21,42 +21,8 @@ const normalizeCatalog = (catalog) =>
     }))
     .filter((template) => template.tier === "default" || template.tier === "premium");
 
-const loadRendererModule = async () => {
-  if (!rendererModulePromise) {
-    rendererModulePromise = import("portfolio-template-renderer").catch((err) => {
-      console.error("[templateCatalog] Failed to load portfolio-template-renderer:", err);
-      throw err;
-    });
-  }
-  return rendererModulePromise;
-};
+export const getTemplateCatalog = async () => normalizeCatalog(TEMPLATE_CATALOG);
 
-export const getTemplateCatalog = async () => {
-  try {
-    // Source of truth: renderer package (default + premium repos).
-    const renderer = await loadRendererModule();
-    return normalizeCatalog(renderer.TEMPLATE_CATALOG);
-  } catch (err) {
-    console.error("[templateCatalog] catalog load error:", err);
-    throw err;
-  }
-};
+export const getTemplateCatalogFromRenderer = async () => normalizeCatalog(TEMPLATE_CATALOG);
 
-export const getTemplateCatalogFromRenderer = async () => {
-  try {
-    const renderer = await loadRendererModule();
-    return normalizeCatalog(renderer.TEMPLATE_CATALOG);
-  } catch (err) {
-    console.error("[templateCatalog] renderer catalog error:", err);
-    return [];
-  }
-};
-
-export const getTemplateById = async (templateId) => {
-  const renderer = await loadRendererModule();
-  if (typeof renderer.getTemplateById === "function") {
-    return renderer.getTemplateById(templateId);
-  }
-  return null;
-};
-
+export const getTemplateById = async (templateId) => getTemplateByIdSync(templateId);

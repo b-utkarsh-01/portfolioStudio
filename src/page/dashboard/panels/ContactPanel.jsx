@@ -3,13 +3,13 @@ import { inputClassName } from "../dashboardFormConfig";
 
 const emptyContact = { type: "", text: "", href: "", external: false };
 const removeBtnClass =
-  "inline-flex h-10 w-10 items-center justify-center rounded-lg border border-rose-500/70 text-rose-300 hover:bg-rose-500/20 hover:text-rose-200 focus:outline-none focus:ring-2 focus:ring-rose-400/60";
+  "shrink-0 inline-flex h-10 w-10 items-center justify-center rounded-lg border border-rose-500/70 text-rose-300 hover:bg-rose-500/20 hover:text-rose-200 focus:outline-none focus:ring-2 focus:ring-rose-400/60 transition";
 
 const ContactPanel = ({ form, onCollectionItemAdd, onCollectionItemRemove, onCollectionItemChange }) => {
   const items = Array.isArray(form.contactItems) ? form.contactItems : [];
 
   return (
-    <section className="rounded-xl border border-slate-700 bg-slate-900/30 p-4">
+    <section className="rounded-xl border border-slate-700 bg-slate-900/30 p-3.5 sm:p-4 min-w-0">
       <div className="mb-3">
         <div>
           <p className="text-sm font-semibold text-slate-100">Contact Links</p>
@@ -17,29 +17,29 @@ const ContactPanel = ({ form, onCollectionItemAdd, onCollectionItemRemove, onCol
         </div>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-3 min-w-0">
         {items.map((item) => (
-          <div key={item.id} className="rounded-lg border border-slate-700 bg-slate-950/40 p-3">
-            <div className="grid gap-2 lg:grid-cols-[110px_minmax(0,1fr)_minmax(0,1fr)_150px_auto]">
+          <div key={item.id} className="rounded-lg border border-slate-700 bg-slate-950/40 p-3 min-w-0">
+            <div className="grid gap-2 min-w-0 lg:grid-cols-[110px_minmax(0,1fr)_minmax(0,1fr)_150px_auto]">
               <input
                 value={item.type}
                 onChange={(event) => onCollectionItemChange?.("contactItems", item.id, "type", event.target.value)}
                 placeholder="eg. Phone"
-                className={`${inputClassName} mt-0`}
+                className={`${inputClassName} mt-0 min-w-0`}
               />
               <input
                 value={item.text}
                 onChange={(event) => onCollectionItemChange?.("contactItems", item.id, "text", event.target.value)}
                 placeholder="Text (e.g. +91 98765...)"
-                className={`${inputClassName} mt-0`}
+                className={`${inputClassName} mt-0 min-w-0`}
               />
               <input
                 value={item.href}
                 onChange={(event) => onCollectionItemChange?.("contactItems", item.id, "href", event.target.value)}
                 placeholder="URL (tel:/mailto:/https://)"
-                className={`${inputClassName} mt-0`}
+                className={`${inputClassName} mt-0 min-w-0`}
               />
-              <label className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-700 px-3 py-2 text-xs text-slate-300">
+              <label className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-700 px-3 py-2 text-xs text-slate-300 cursor-pointer hover:bg-slate-800/40">
                 <input
                   type="checkbox"
                   checked={Boolean(item.external)}
@@ -66,7 +66,7 @@ const ContactPanel = ({ form, onCollectionItemAdd, onCollectionItemRemove, onCol
         <button
           type="button"
           onClick={() => onCollectionItemAdd?.("contactItems", emptyContact)}
-          className="w-full rounded-lg border border-cyan-400/60 px-3 py-2 text-xs font-semibold text-cyan-300 hover:bg-cyan-500/10"
+          className="w-full rounded-lg border border-cyan-400/60 px-3 py-2 text-xs font-semibold text-cyan-300 hover:bg-cyan-500/10 transition"
         >
           + Add Contact
         </button>

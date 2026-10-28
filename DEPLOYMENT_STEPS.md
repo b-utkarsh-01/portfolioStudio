@@ -1,212 +1,149 @@
-# Deployment Steps
+# Deployment Steps (Updated Architecture)
 
-This file explains, how to safely “push” changes to production when you edit **any one repo** (default templates / premium templates / template renderer / frontend / backend) or **multiple repos together**.
+This document explains how to safely push and deploy changes when you edit **any repo** (`default-templates`, `premium-templates`, `frontend`, `backend`).
 
-The most important concept in this project is **SHA pinning**:
-- The `frontend` app does **not automatically** pick the latest templates.
-- Instead, `frontend/package.json` contains a URL that is pinned to a specific Git commit **SHA**.
-- So after you push templates, you must also update the SHA in the consuming app(s), otherwise production may still use the old version.
-
----
-
-## 0) Quick glossary (easy words)
-
-- **Repo**: a project folder with its own Git history (example: `premium-templates/`).
-- **Commit**: a saved snapshot of your changes.
-- **Push**: sending your commits to GitHub so production can use them.
-- **SHA**: the unique ID of a commit (looks like random letters/numbers).
-- **Pinning**: writing a specific SHA into `package.json` so the app uses exactly that commit.
+The most important concept in this project is **Git SHA Pinning**:
+- Frontend (`portfolioStudio/package.json`) GitHub tarball URLs se packages fetch karta hai.
+- Ye URLs specific commit **SHA** pe pin hoti hain taaki production build stable aur predictable rahe.
+- Jab bhi aap `default` ya `premium` repo mein change push karte ho, aapko frontend ke `package.json` mein uska SHA update karna padta hai.
 
 ---
 
-## 1) The repos in this workspace
+## 1) Repositories in this project
 
-- `default-templates/` → default template package
-- `premium-templates/` → premium template package
-- `template-renderer/` → engine that renders templates
-- `frontend/` → website (Vercel deploy)
-- `backedn/` → backend API
-
----
-
-## 2) How to get the SHA (the command)
-
-You get the SHA **from the repo you just committed**.
-
-Steps:
-1) Open terminal
-2) Go inside the repo you changed:
-   - `cd premium-templates`
-   - OR `cd default-templates`
-   - OR `cd template-renderer`
-3) Run:
-   - `git rev-parse HEAD`
-
-That printed value is your SHA.
-
-Example:
-- `59fc501ddca68a1a201c4e3c5b5bd0cc05176487`
-
-Tip:
-- Use the full SHA you get from the command (safe).
+| Repo Folder | Purpose | Deploy Platform |
+|---|---|---|
+| `portfolioStudio-default/` | Free/Default portfolio templates | Git Repo (consumed as npm package) |
+| `portfolioStudio-premium/` | Premium portfolio templates | Git Repo (consumed as npm package) |
+| `portfolioStudio/` | Main React Frontend App | Vercel / Nginx Docker |
+| `portfolioStudio-backend/` | Node.js / Express API | Docker / Render / VPS |
 
 ---
 
-## 3) Where the SHA must be updated (which file + which keys)
+## 2) How to get the SHA of a commit
 
-### A) If you changed **premium templates** (`premium-templates/`)
+Repo ke folder mein jaake commit karo aur SHA lo:
 
-You must update the SHA in:
+```bash
+# Repo ke andar jao
+cd portfolioStudio-premium   # ya portfolioStudio-default
 
-1) `frontend/package.json`
-   - `dependencies.portfolio-studio-premium`
-   - `overrides.portfolio-studio-premium`
-   - `overrides["portfolio-template-renderer"].portfolio-studio-premium`
+# Commit karo
+git add .
+git commit -m "Update styles and animations"
+git push origin main
 
-2) `template-renderer/package.json`
-   - `dependencies.portfolio-studio-premium`
+# SHA print karo
+git rev-parse HEAD
+```
 
-The URL format used is:
-- `https://codeload.github.com/b-utkarsh-01/portfolioStudio-premium/tar.gz/<SHA>`
-
-So you replace `<SHA>` with your new SHA.
-
-### B) If you changed **default templates** (`default-templates/`)
-
-You must update the SHA in:
-
-1) `frontend/package.json`
-   - `dependencies.portfolio-studio-default`
-   - `overrides.portfolio-studio-default`
-   - `overrides["portfolio-template-renderer"].portfolio-studio-default`
-
-2) `template-renderer/package.json` (if it has the default package)
-   - `dependencies.portfolio-studio-default`
-
-URL format:
-- `https://codeload.github.com/b-utkarsh-01/portfolioStudio-default/tar.gz/<SHA>`
-
-### C) If you changed **template renderer** (`template-renderer/`)
-
-You must update the SHA in:
-
-1) `frontend/package.json`
-   - `dependencies.portfolio-template-renderer`
-   - (optional, only if present) `overrides.portfolio-template-renderer`
-
-URL format:
-- `https://codeload.github.com/b-utkarsh-01/portfolioStudio-template-renderer/tar.gz/<SHA>`
-
-### D) If you changed **frontend** only (`frontend/`)
-
-Usually you do **not** need any SHA update (unless you are also updating templates/renderer pins).
-
-### E) If you changed **backend** only (`backedn/`)
-
-No SHA pinning is required in `package.json` for frontend templates. Backend deploy is separate.
+Output example: `ec790e5...` (ya full 40-character SHA)
 
 ---
 
-## 4) The “Lockfile” rule (VERY important for no production errors)
+## 3) Deployment Workflows
 
-Whenever you change ANY dependency URL/SHA inside `frontend/package.json`, you must also update and push the lockfile:
+### 🅰️ Agar ONLY `portfolioStudio-premium` mein change hua:
 
-1) `cd frontend`
-2) `npm install`
-3) This updates `frontend/package-lock.json`
-4) Commit + push BOTH files:
-   - `frontend/package.json`
-   - `frontend/package-lock.json`
+1. **Commit & Push Premium Repo:**
+   ```bash
+   cd portfolioStudio-premium
+   git add .
+   git commit -m "Updated premium templates"
+   git push origin main
+   git rev-parse HEAD    # <--- SHA copy karo
+   ```
 
-If you push only `package.json` and forget `package-lock.json`, production can break or keep old versions.
+2. **Frontend `package.json` update karo:**
+   File: `portfolioStudio/package.json`
+   Replace `<NEW_PREMIUM_SHA>`:
+   ```json
+   "dependencies": {
+     "portfolio-studio-premium": "https://codeload.github.com/b-utkarsh-01/portfolioStudio-premium/tar.gz/<NEW_PREMIUM_SHA>"
+   },
+   "overrides": {
+     "portfolio-studio-premium": "https://codeload.github.com/b-utkarsh-01/portfolioStudio-premium/tar.gz/<NEW_PREMIUM_SHA>"
+   }
+   ```
 
----
+3. **Lockfile sync karo aur Frontend build check karo:**
+   ```bash
+   cd portfolioStudio
+   npm install
+   npm run build
+   ```
 
-## 5) Step‑by‑step: what to push first (order matters)
-
-### Situation 1: You changed **only premium templates**
-
-Do this order:
-1) `premium-templates/` → commit + push
-2) Update premium SHA in:
-   - `frontend/package.json`
-   - `template-renderer/package.json`
-3) `frontend/` → `npm install` → build → commit + push (with lockfile)
-4) (if `template-renderer/package.json` changed) `template-renderer/` → commit + push
-
-### Situation 2: You changed **only default templates**
-
-Same pattern:
-1) `default-templates/` → commit + push
-2) Update default SHA in:
-   - `frontend/package.json`
-   - `template-renderer/package.json` (if present)
-3) `frontend/` → `npm install` → build → commit + push (with lockfile)
-4) `template-renderer/` → commit + push (if you changed it)
-
-### Situation 3: You changed **only template-renderer**
-
-Do this order:
-1) `template-renderer/` → commit + push
-2) Update renderer SHA in `frontend/package.json`
-3) `frontend/` → `npm install` → build → commit + push (with lockfile)
-
-### Situation 4: You changed **only frontend**
-
-Do this order:
-1) `frontend/` → `npm run build` (recommended)
-2) commit + push
-
-### Situation 5: You changed **only backend**
-
-Do this order:
-1) `backedn/` → run tests (if you have) → commit + push
-2) Check backend deployment logs (whatever platform you use)
-
-### Situation 6: You changed **premium templates + frontend**
-
-Do this order:
-1) Push `premium-templates/`
-2) Update premium SHA in `frontend/package.json` (+ overrides)
-3) `frontend/` → `npm install` → build → commit + push
-
-### Situation 7: You changed **premium templates + renderer + frontend**
-
-Do this order:
-1) Push `premium-templates/`
-2) Push `template-renderer/`
-3) Update BOTH SHAs in `frontend/package.json`:
-   - premium templates SHA
-   - renderer SHA
-4) `frontend/` → `npm install` → build → commit + push
-
-### Situation 8: You changed **backend + frontend**
-
-If frontend depends on backend API changes, prefer:
-1) Push `backedn/` first (keep API backward compatible if possible)
-2) Push `frontend/` next
+4. **Frontend Push karo:**
+   ```bash
+   git add package.json package-lock.json
+   git commit -m "Bump premium template SHA to <NEW_PREMIUM_SHA>"
+   git push origin main
+   ```
+   *(Vercel / CI-CD automatically new build trigger kar dega!)*
 
 ---
 
-## 6) Mini command templates (copy/paste)
+### 🅱️ Agar ONLY `portfolioStudio-default` mein change hua:
 
-### Commit and push (inside any repo)
+1. **Commit & Push Default Repo:**
+   ```bash
+   cd portfolioStudio-default
+   git add .
+   git commit -m "Updated default templates"
+   git push origin main
+   git rev-parse HEAD    # <--- SHA copy karo
+   ```
 
-- `git status -sb`
-- `git add -A`
-- `git commit -m "Your message"`
-- `git push origin main`
+2. **Frontend `package.json` update karo:**
+   File: `portfolioStudio/package.json`
+   Replace `<NEW_DEFAULT_SHA>`:
+   ```json
+   "dependencies": {
+     "portfolio-studio-default": "https://codeload.github.com/b-utkarsh-01/portfolioStudio-default/tar.gz/<NEW_DEFAULT_SHA>"
+   },
+   "overrides": {
+     "portfolio-studio-default": "https://codeload.github.com/b-utkarsh-01/portfolioStudio-default/tar.gz/<NEW_DEFAULT_SHA>"
+   }
+   ```
 
-### Get SHA (inside the repo you just committed)
+3. **Lockfile sync karo & Push frontend:**
+   ```bash
+   cd portfolioStudio
+   npm install
+   npm run build
+   git add package.json package-lock.json
+   git commit -m "Bump default template SHA to <NEW_DEFAULT_SHA>"
+   git push origin main
+   ```
 
-- `git rev-parse HEAD`
+---
 
-### Frontend install/build after SHA change
+### 🅲 Agar ONLY `portfolioStudio` (Frontend UI / Pages) mein change hua:
 
-- `cd frontend`
-- `npm install`
-- `npm run build`
-- `git add package.json package-lock.json`
-- `git commit -m "Bump templates/renderer SHA"`
-- `git push origin main`
+Koyi SHA update nahi karna!
+```bash
+cd portfolioStudio
+git add .
+git commit -m "Update dashboard UI"
+git push origin main
+```
 
+---
+
+### 🅳 Agar ONLY `portfolioStudio-backend` mein change hua:
+
+Frontend ko koyi fark nahi padta:
+```bash
+cd portfolioStudio-backend
+git add .
+git commit -m "Update API endpoint"
+git push origin main
+```
+Backend hosting service (Docker / Render / VPS) pe re-deploy ho jayega.
+
+---
+
+## 4) Crucial Rules for Zero Downtime
+
+1. **Lockfile Rule**: Hamesha `package.json` change karne ke baad `npm install` run karke `package-lock.json` ko commit karo. Agar lockfile commit nahi ki, toh Vercel / Docker build fail ho sakti hai ya cached version utha sakti hai.
+2. **Backend First Rule**: Agar backend API mein breaking change hai, toh pehle backend deploy karo, phir frontend.

@@ -13,12 +13,14 @@ const ProfilePage = () => {
   const navigate = useNavigate();
   const [templateId, setTemplateId] = useState("default-v4");
   const [portfolioData, setPortfolioData] = useState(null);
+  const [portfolioInfo, setPortfolioInfo] = useState(null);
   const [draft, setDraft] = useState(null);
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [accountDraft, setAccountDraft] = useState({ displayName: "" });
   const [loading, setLoading] = useState(true);
   const [activeStage, setActiveStage] = useState("account");
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -26,13 +28,18 @@ const ProfilePage = () => {
       try {
         const payload = await getMyPortfolioApi();
         if (!cancelled) {
-          const nextData = payload?.portfolio?.data || null;
+          const nextPortfolio = payload?.portfolio || null;
+          const nextData = nextPortfolio?.data || null;
           setPortfolioData(nextData);
+          setPortfolioInfo(nextPortfolio);
           setDraft(nextData ? JSON.parse(JSON.stringify(nextData)) : null);
-          setTemplateId(payload?.portfolio?.templateId || "default-v4");
+          setTemplateId(nextPortfolio?.templateId || "default-v4");
         }
       } catch {
-        if (!cancelled) setPortfolioData(null);
+        if (!cancelled) {
+          setPortfolioData(null);
+          setPortfolioInfo(null);
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -46,6 +53,47 @@ const ProfilePage = () => {
   useEffect(() => {
     setAccountDraft({ displayName: `${currentUser?.displayName || ""}`.trim() });
   }, [currentUser?.displayName]);
+
+  // Compute public portfolio link
+  const portfolioPath = useMemo(() => {
+    if (portfolioInfo?.status === "published" && portfolioInfo?.slug) {
+      return `/p/${portfolioInfo.slug}`;
+    }
+    const uname = portfolioInfo?.username || currentUser?.username;
+    return uname ? `/u/${uname}` : "";
+  }, [portfolioInfo, currentUser?.username]);
+
+  const portfolioUrl = useMemo(() => {
+    if (!portfolioPath) return "";
+    if (typeof window === "undefined") return portfolioPath;
+    return `${window.location.origin}${portfolioPath}`;
+  }, [portfolioPath]);
+
+  const handleCopyPortfolioLink = async () => {
+    if (!portfolioUrl) {
+      toast.info("Portfolio link is not ready yet.");
+      return;
+    }
+    try {
+      if (navigator?.clipboard?.writeText) {
+        await navigator.clipboard.writeText(portfolioUrl);
+      } else {
+        throw new Error("Clipboard API not available");
+      }
+    } catch {
+      const textArea = document.createElement("textarea");
+      textArea.value = portfolioUrl;
+      textArea.style.position = "fixed";
+      textArea.style.opacity = "0";
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textArea);
+    }
+    setCopied(true);
+    toast.success("Portfolio link copied to clipboard!");
+    setTimeout(() => setCopied(false), 2500);
+  };
 
   const titleLine = useMemo(() => {
     const raw = portfolioData?.profile?.title;
@@ -100,6 +148,7 @@ const ProfilePage = () => {
     setDraft((prev) => {
       const next = prev ? JSON.parse(JSON.stringify(prev)) : {};
       if (path === "profile.name") next.profile.name = value;
+      if (path === "profile.avatar") next.profile.avatar = value;
       if (path === "profile.summary") next.profile.summary = value;
       return next;
     });
@@ -235,22 +284,44 @@ const ProfilePage = () => {
   };
 
   return (
-    <section className="mx-auto flex h-[calc(100dvh-170px)] min-h-0 max-w-6xl flex-col space-y-4 overflow-hidden">
-      <ProfileHeader
-        editing={editing}
-        saving={saving}
-        onEdit={handleStartEdit}
-        onCancel={handleCancelEdit}
-        onSave={handleSave}
-        onLogout={handleLogout}
-      />
+    <div className="mx-auto flex w-full max-w-6xl min-w-0 flex-col gap-3.5 sm:gap-4 lg:h-[calc(100dvh-150px)] lg:min-h-0 lg:overflow-hidden">
+      {/* Fixed Header Banner at the top */}
+      <div className="shrink-0 w-full min-w-0">
+        <ProfileHeader
+          currentUser={currentUser}
+          portfolioData={portfolioData}
+          portfolioInfo={portfolioInfo}
+          portfolioUrl={portfolioUrl}
+          editing={editing}
+          saving={saving}
+          onEdit={handleStartEdit}
+          onCancel={handleCancelEdit}
+          onSave={handleSave}
+          onLogout={handleLogout}
+          onCopy={handleCopyPortfolioLink}
+          copied={copied}
+        />
+      </div>
 
-      <div className="grid min-h-0 flex-1 gap-4 lg:grid-cols-[260px_minmax(0,1fr)]">
-        <ProfileStageSidebar activeStage={activeStage} setActiveStage={setActiveStage} />
+      {/* Main Row: Left Sidebar & Right Content Panel have identical full height */}
+      <div className="grid flex-1 min-h-0 w-full min-w-0 gap-3.5 sm:gap-4 lg:grid-cols-[280px_minmax(0,1fr)] lg:overflow-hidden">
+        <div className="h-full w-full min-w-0 min-h-0">
+          <ProfileStageSidebar activeStage={activeStage} setActiveStage={setActiveStage} />
+        </div>
 
-        <div className="frontend-scrollbar min-h-0 overflow-y-auto pr-1">
+        <div className="flex h-full min-h-0 min-w-0 w-full flex-col">
           {activeStage === "account" ? (
-            <AccountPanel editing={editing} currentUser={currentUser} accountDraft={accountDraft} setAccountDraft={setAccountDraft} />
+            <AccountPanel
+              editing={editing}
+              currentUser={currentUser}
+              accountDraft={accountDraft}
+              setAccountDraft={setAccountDraft}
+              portfolioUrl={portfolioUrl}
+              onCopy={handleCopyPortfolioLink}
+              copied={copied}
+              templateId={templateId}
+              isPublished={portfolioInfo?.status === "published"}
+            />
           ) : (
             <PortfolioPanel
               loading={loading}
@@ -274,7 +345,7 @@ const ProfilePage = () => {
           )}
         </div>
       </div>
-    </section>
+    </div>
   );
 };
 

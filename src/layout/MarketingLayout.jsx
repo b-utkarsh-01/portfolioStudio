@@ -9,9 +9,9 @@ const MarketingLayout = () => {
 
   return (
     <div className="min-h-screen bg-slate-950 text-white overflow-x-hidden">
-      <header className="border-b border-slate-800">
-        <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
-          <Link to="/" className="text-2xl font-semibold leading-tight tracking-tight text-white sm:text-2xl">
+      <header className="border-b border-slate-800 bg-slate-950/80 backdrop-blur-md sticky top-0 z-40">
+        <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-3.5 sm:px-6 sm:py-4">
+          <Link to="/" className="text-xl font-bold leading-tight tracking-tight text-white sm:text-2xl">
             Portfolio Studio
           </Link>
           <MobileNav mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />
@@ -19,7 +19,7 @@ const MarketingLayout = () => {
         </div>
         {mobileOpen ? <MobileDrawer setMobileOpen={setMobileOpen} /> : null}
       </header>
-      <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6">
+      <main className="mx-auto w-full max-w-6xl px-4 py-4 sm:px-6 sm:py-8 min-w-0 overflow-x-hidden">
         <Outlet />
       </main>
     </div>

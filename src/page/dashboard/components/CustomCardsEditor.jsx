@@ -1,74 +1,88 @@
 import React from "react";
 import Field from "../Field";
 import { inputClassName } from "../dashboardFormConfig";
+import { Trash2 } from "lucide-react";
+import ImageInputWithUpload from "../../../layout/components/ImageInputWithUpload";
 
 const CustomCardsEditor = ({ activeStageKey, activeCustomStage, onCustomStageChange }) => {
+  const cards = Array.isArray(activeCustomStage?.cards) ? activeCustomStage.cards : [];
+
   const updateCardField = (cardIndex, field, value) => {
-    const cards = Array.isArray(activeCustomStage?.cards) ? activeCustomStage.cards : [];
-    const nextCards = cards.map((card, index) => (index === cardIndex ? { ...card, [field]: value } : card));
-    onCustomStageChange?.(activeStageKey, { cards: nextCards });
+    const nextCards = cards.map((card, index) => {
+      if (index !== cardIndex) return card;
+      return { ...card, [field]: value };
+    });
+    onCustomStageChange?.(activeStageKey, { ...activeCustomStage, kind: "cards", cards: nextCards });
   };
 
   const addCard = () => {
-    const cards = Array.isArray(activeCustomStage?.cards) ? activeCustomStage.cards : [];
     onCustomStageChange?.(activeStageKey, {
+      ...activeCustomStage,
+      kind: "cards",
       cards: [...cards, { title: "", subtitle: "", description: "", link: "", image: "" }],
     });
   };
 
   const removeCard = (cardIndex) => {
-    const cards = Array.isArray(activeCustomStage?.cards) ? activeCustomStage.cards : [];
     onCustomStageChange?.(activeStageKey, {
+      ...activeCustomStage,
+      kind: "cards",
       cards: cards.filter((_, index) => index !== cardIndex),
     });
   };
 
-  const cards = Array.isArray(activeCustomStage?.cards) ? activeCustomStage.cards : [];
-
   return (
-    <div className="space-y-3">
-      <p className="text-sm font-semibold text-slate-200">Cards</p>
-      {cards.length === 0 ? (
-        <div className="rounded-lg border border-slate-700 bg-slate-950/40 p-3 text-sm text-slate-400">
-          No cards yet. Click <span className="text-emerald-300">+ Add Card</span>.
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-sm font-semibold text-slate-100">Cards Section</h3>
+          <p className="text-xs text-slate-400">Add cards with title, description, link and image.</p>
         </div>
-      ) : null}
+        <button
+          type="button"
+          onClick={addCard}
+          className="rounded-lg border border-cyan-400/60 px-3 py-1.5 text-xs font-semibold text-cyan-300 hover:bg-cyan-500/10"
+        >
+          + Add Card
+        </button>
+      </div>
+
       {cards.map((card, index) => (
-        <div key={`${activeStageKey}-card-${index}`} className="space-y-3 rounded-xl border border-slate-700 bg-slate-950/40 p-3">
+        <div key={`${activeStageKey}-card-${index}`} className="rounded-xl border border-slate-700 bg-slate-900/30 p-4 space-y-3">
           <div className="flex items-center justify-between">
-            <p className="text-xs uppercase tracking-wide text-slate-400">Card {index + 1}</p>
+            <span className="text-xs font-semibold text-slate-300">Card {index + 1}</span>
             <button
               type="button"
               onClick={() => removeCard(index)}
-              className="rounded-md border border-rose-500/60 px-2 py-1 text-xs text-rose-300 hover:bg-rose-500/10"
+              className="rounded-lg border border-rose-500/60 p-1.5 text-rose-300 hover:bg-rose-500/10"
+              title="Remove card"
             >
-              Delete
+              <Trash2 className="h-4 w-4" />
             </button>
           </div>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <Field label="Title">
-              <input
-                value={card?.title || ""}
-                onChange={(event) => updateCardField(index, "title", event.target.value)}
-                placeholder="e.g. Feature 1"
-                className={inputClassName}
-              />
-            </Field>
-            <Field label="Subtitle">
-              <input
-                value={card?.subtitle || ""}
-                onChange={(event) => updateCardField(index, "subtitle", event.target.value)}
-                placeholder="e.g. Quick summary"
-                className={inputClassName}
-              />
-            </Field>
-          </div>
+
+          <Field label="Title">
+            <input
+              value={card?.title || ""}
+              onChange={(event) => updateCardField(index, "title", event.target.value)}
+              placeholder="Card Title"
+              className={inputClassName}
+            />
+          </Field>
+          <Field label="Subtitle (optional)">
+            <input
+              value={card?.subtitle || ""}
+              onChange={(event) => updateCardField(index, "subtitle", event.target.value)}
+              placeholder="Subtitle / Metric"
+              className={inputClassName}
+            />
+          </Field>
           <Field label="Description">
             <textarea
+              rows={3}
               value={card?.description || ""}
               onChange={(event) => updateCardField(index, "description", event.target.value)}
-              rows={3}
-              placeholder="Describe this card content..."
+              placeholder="Card description text"
               className={inputClassName}
             />
           </Field>
@@ -80,20 +94,23 @@ const CustomCardsEditor = ({ activeStageKey, activeCustomStage, onCustomStageCha
               className={inputClassName}
             />
           </Field>
-          <Field label="Image URL (optional)">
-            <input
+          <div>
+            <label className="block text-xs font-medium text-slate-300 mb-1">
+              Image (URL or JPG Upload)
+            </label>
+            <ImageInputWithUpload
               value={card?.image || ""}
               onChange={(event) => updateCardField(index, "image", event.target.value)}
-              placeholder="https://example.com/image.jpg"
-              className={inputClassName}
+              placeholder="https://example.com/image.jpg or upload JPG..."
+              maxDimension={800}
             />
-          </Field>
+          </div>
         </div>
       ))}
       <button
         type="button"
         onClick={addCard}
-        className="w-full rounded-md border border-emerald-500/60 px-3 py-2 text-sm font-medium text-emerald-300 hover:bg-emerald-500/10"
+        className="w-full rounded-lg border border-cyan-400/60 px-3 py-2 text-xs font-semibold text-cyan-300 hover:bg-cyan-500/10"
       >
         + Add Card
       </button>
