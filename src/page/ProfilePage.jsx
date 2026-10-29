@@ -7,6 +7,9 @@ import ProfileHeader from "./profile/components/ProfileHeader";
 import ProfileStageSidebar from "./profile/components/ProfileStageSidebar";
 import AccountPanel from "./profile/components/AccountPanel";
 import PortfolioPanel from "./profile/components/PortfolioPanel";
+import HistoryPanel from "./profile/components/HistoryPanel";
+import ConfirmModal from "../components/common/ConfirmModal";
+import { LogOut } from "lucide-react";
 
 const ProfilePage = () => {
   const { currentUser, logout, updateCurrentUser } = useAuth();
@@ -21,6 +24,7 @@ const ProfilePage = () => {
   const [loading, setLoading] = useState(true);
   const [activeStage, setActiveStage] = useState("account");
   const [copied, setCopied] = useState(false);
+  const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -109,7 +113,11 @@ const ProfilePage = () => {
       .join(" | ");
   }, [portfolioData]);
 
-  const handleLogout = async () => {
+  const handleLogout = () => {
+    setLogoutConfirmOpen(true);
+  };
+
+  const confirmLogout = async () => {
     await logout();
     navigate("/auth", { replace: true });
   };
@@ -322,6 +330,20 @@ const ProfilePage = () => {
               templateId={templateId}
               isPublished={portfolioInfo?.status === "published"}
             />
+          ) : activeStage === "history" ? (
+            <HistoryPanel
+              currentPortfolioData={portfolioData}
+              currentTemplateId={templateId}
+              onPortfolioRestored={(newPortfolio) => {
+                const nextData = newPortfolio?.data || null;
+                setPortfolioData(nextData);
+                setPortfolioInfo(newPortfolio);
+                setDraft(nextData ? JSON.parse(JSON.stringify(nextData)) : null);
+                if (newPortfolio?.templateId) {
+                  setTemplateId(newPortfolio.templateId);
+                }
+              }}
+            />
           ) : (
             <PortfolioPanel
               loading={loading}
@@ -345,6 +367,18 @@ const ProfilePage = () => {
           )}
         </div>
       </div>
+
+      {/* Logout Confirmation Modal */}
+      <ConfirmModal
+        isOpen={logoutConfirmOpen}
+        onClose={() => setLogoutConfirmOpen(false)}
+        onConfirm={confirmLogout}
+        title="Log Out of Portfolio Studio?"
+        message="Are you sure you want to log out? You will need to sign in again to access your dashboard and settings."
+        confirmText="Log Out"
+        variant="warning"
+        icon={LogOut}
+      />
     </div>
   );
 };

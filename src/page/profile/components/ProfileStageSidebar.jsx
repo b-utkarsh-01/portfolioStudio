@@ -1,5 +1,5 @@
 import React from "react";
-import { ShieldCheck, User, IdCard, Share2, CheckCircle2 } from "lucide-react";
+import { ShieldCheck, User, IdCard, Share2, CheckCircle2, History } from "lucide-react";
 
 const STAGES = [
   {
@@ -7,6 +7,12 @@ const STAGES = [
     label: "Account & Security",
     desc: "Credentials, plan & auth",
     icon: ShieldCheck,
+  },
+  {
+    id: "history",
+    label: "History & Backups",
+    desc: "Snapshots & rollback",
+    icon: History,
   },
   {
     id: "profile",
@@ -114,7 +120,7 @@ const ProfileStageSidebar = ({ activeStage, setActiveStage }) => {
             <CheckCircle2 className="h-4 w-4 text-emerald-400" />
             <span className="text-xs font-semibold text-slate-200">Portfolio Studio</span>
           </div>
-          <p className="text-[11px] text-slate-500 mt-1">Profile settings & credentials live.</p>
+          <p className="text-[11px] text-slate-500 mt-1">Version history & settings live.</p>
         </div>
       </aside>
     </>

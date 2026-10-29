@@ -70,7 +70,7 @@ const AccountDetails = ({
       </div>
 
       {/* Live Portfolio Share Card */}
-      {portfolioUrl && (
+      {/* {portfolioUrl && (
         <div className="rounded-2xl border border-emerald-500/30 bg-emerald-950/10 p-4 space-y-3">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-2">
@@ -115,7 +115,7 @@ const AccountDetails = ({
             </div>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 };
