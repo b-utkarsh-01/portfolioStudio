@@ -25,45 +25,45 @@ Templates come from two separate private GitHub repos (`portfolio-studio-default
  
 ```mermaid
 graph TD
-  subgraph Browser
-    A[React SPA - Vite] --> B[AuthContext]
-    A --> C[React Router v7]
-    C --> D[Protected Routes]
-    C --> E[Public Portfolio Routes]
-    A --> F[templateRendererBridge.jsx]
-    F --> G[DefaultPortfolioRenderer]
-    F --> H[PremiumPortfolioRenderer]
-    F --> I[AiDynamicTemplateRenderer]
+  subgraph Browser ["Browser"]
+    A["React SPA - Vite"] --> B["AuthContext"]
+    A --> C["React Router v7"]
+    C --> D["Protected Routes"]
+    C --> E["Public Portfolio Routes"]
+    A --> F["templateRendererBridge.jsx"]
+    F --> G["DefaultPortfolioRenderer"]
+    F --> H["PremiumPortfolioRenderer"]
+    F --> I["AiDynamicTemplateRenderer"]
   end
- 
-  subgraph npm Packages - SHA Pinned
-    J[portfolio-studio-default @ SHA]
-    K[portfolio-studio-premium @ SHA]
-    L[portfolio-template-renderer @ SHA]
+
+  subgraph npmPackages ["npm Packages - SHA Pinned"]
+    J["portfolio-studio-default @ SHA"]
+    K["portfolio-studio-premium @ SHA"]
+    L["portfolio-template-renderer @ SHA"]
   end
- 
+
   F -->|imports| J
   F -->|imports| K
   L -->|TEMPLATE_CATALOG| F
- 
-  subgraph Express Backend - backedn/
-    M[server.js] --> N[/api/auth]
-    M --> O[/api/portfolios]
-    M --> P[/api/templates]
-    M --> Q[/api/ai - app.js only]
-    N --> R[authMiddleware + JWT]
+
+  subgraph ExpressBackend ["Express Backend - backend/"]
+    M["server.js"] --> N["/api/auth"]
+    M --> O["/api/portfolios"]
+    M --> P["/api/templates"]
+    M --> Q["/api/ai - app.js only"]
+    N --> R["authMiddleware + JWT"]
     O --> R
   end
- 
-  subgraph MongoDB
-    S[User collection]
-    T[Portfolio collection]
+
+  subgraph Database ["MongoDB"]
+    S["User collection"]
+    T["Portfolio collection"]
   end
- 
+
   R --> S
   O --> T
   N --> S
- 
+
   A -->|fetch with cookies| M
 ```
  
